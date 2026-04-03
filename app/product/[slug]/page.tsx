@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import {
   InterpretationCard,
@@ -20,7 +20,6 @@ import { scoreProduct } from "@/lib/scoring";
 
 export default function ProductPage() {
   const params = useParams<{ slug: string }>();
-  const router = useRouter();
   const searchParams = useSearchParams();
   const slug = params.slug;
   const sampleMode = searchParams.get("sample") === "1";
@@ -35,7 +34,6 @@ export default function ProductPage() {
     shoppingList,
     toggleFavorite,
     toggleShoppingList,
-    setCompareSelection,
     addRecentScan,
     markSampleResultViewed,
     markFirstMeaningfulInteraction,
@@ -226,12 +224,8 @@ export default function ProductPage() {
                 <RecommendationModule
                   key={alt.id}
                   product={alt}
-                  onCompare={() => {
-                    setCompareSelection({ originalSlug: product.slug, alternativeSlug: alt.slug });
-                    addRecentScan(product.slug);
-                    markFirstMeaningfulInteraction("compare");
-                    router.push("/compare");
-                  }}
+                  primaryHref={`/product/${alt.slug}`}
+                  ctaLabel="View healthier result"
                 />
               ))}
             </div>

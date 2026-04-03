@@ -59,7 +59,15 @@ export function RetailerRow({
   );
 }
 
-export function RecommendationModule({ product, onCompare }: { product: Product; onCompare?: () => void }) {
+export function RecommendationModule({
+  product,
+  primaryHref,
+  ctaLabel = "View healthier result"
+}: {
+  product: Product;
+  primaryHref: string;
+  ctaLabel?: string;
+}) {
   const score = scoreProduct(product);
   const reasons = [
     product.addedSugarG <= 5 ? "Lower added sugar" : "Moderate sugar profile",
@@ -88,15 +96,9 @@ export function RecommendationModule({ product, onCompare }: { product: Product;
           <ReasonChip key={reason} reason={reason} />
         ))}
       </div>
-      {onCompare ? (
-        <button type="button" className="btn-secondary block w-full text-center text-xs" onClick={onCompare}>
-          Compare with original
-        </button>
-      ) : (
-        <Link href={`/compare`} className="btn-secondary block text-center text-xs">
-          Compare with original
-        </Link>
-      )}
+      <Link href={primaryHref} className="btn-secondary block text-center text-xs">
+        {ctaLabel}
+      </Link>
     </article>
   );
 }
