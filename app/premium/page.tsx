@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { PremiumTriggerSource } from "@/lib/premium-access";
@@ -19,7 +20,7 @@ const plans = [
   }
 ];
 
-export default function PremiumPage() {
+function PremiumPageContent() {
   const searchParams = useSearchParams();
   const source = (searchParams.get("source") as PremiumTriggerSource | null) ?? "premium_preview";
   const { dismissPremiumPrompt, closePremiumPreview, preferences } = useAppState();
@@ -86,5 +87,13 @@ export default function PremiumPage() {
         </div>
       </section>
     </main>
+  );
+}
+
+export default function PremiumPage() {
+  return (
+    <Suspense fallback={<main className="shell section-gap pb-24" />}>
+      <PremiumPageContent />
+    </Suspense>
   );
 }
