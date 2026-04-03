@@ -96,7 +96,7 @@ export function RecommendationModule({ product, onCompare }: { product: Product;
         <Link href={`/compare`} className="btn-secondary block text-center text-xs">
           Compare with original
         </Link>
-      )
+      )}
     </article>
   );
 }

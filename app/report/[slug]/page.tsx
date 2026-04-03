@@ -17,6 +17,14 @@ export default function ReportPage() {
   const [showPremiumPrompt, setShowPremiumPrompt] = useState(false);
   const checkedPromptRef = useRef(false);
 
+  useEffect(() => {
+    if (!product) return;
+    if (checkedPromptRef.current) return;
+    checkedPromptRef.current = true;
+    const shouldPrompt = maybeTriggerPremiumPrompt("report");
+    setShowPremiumPrompt(shouldPrompt);
+  }, [maybeTriggerPremiumPrompt, product]);
+
   if (!product) {
     return <main className="shell"><p className="card-state text-sm">Ingredient report unavailable.</p></main>;
   }
@@ -31,13 +39,6 @@ export default function ReportPage() {
   const alternativeFlags = topAlternative ? topAlternative.additives.length : currentFlags;
   const flagDelta = Math.max(0, currentFlags - alternativeFlags);
   const cleanerPercent = currentFlags > 0 ? Math.round((flagDelta / currentFlags) * 100) : 0;
-
-  useEffect(() => {
-    if (checkedPromptRef.current) return;
-    checkedPromptRef.current = true;
-    const shouldPrompt = maybeTriggerPremiumPrompt("report");
-    setShowPremiumPrompt(shouldPrompt);
-  }, [maybeTriggerPremiumPrompt]);
 
   return (
     <main className="shell section-gap">

@@ -13,8 +13,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body>
         <Providers>
-          {children}
           <MobileNav />
+          {children}
         </Providers>
       </body>
     </html>

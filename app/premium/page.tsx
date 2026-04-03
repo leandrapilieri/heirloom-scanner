@@ -66,7 +66,9 @@ export default function PremiumPage() {
             </article>
           ))}
         </div>
-        <button className="btn-primary">Continue with Premium</button>
+        <Link className="btn-primary inline-flex justify-center" href="/scan">
+          Continue with Premium
+        </Link>
         <p className="text-xs text-ink/60">Mock checkout only in this experiment pass. No billing connection yet.</p>
         <div className="flex gap-2">
           <button
