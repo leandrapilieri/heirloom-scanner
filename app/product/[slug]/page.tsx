@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import {
   InterpretationCard,
@@ -11,6 +11,7 @@ import {
   RetailerRow,
   SeverityChip
 } from "@/components/premium";
+import { premiumSourceProof } from "@/lib/premium-copy";
 import { getAlternativeProducts } from "@/lib/services/alternative-engine";
 import { getProductBySlug } from "@/lib/services/product-catalog";
 import { getRetailerAvailability } from "@/lib/services/retailer-engine";
@@ -19,9 +20,29 @@ import { scoreProduct } from "@/lib/scoring";
 
 export default function ProductPage() {
   const params = useParams<{ slug: string }>();
+  const searchParams = useSearchParams();
   const slug = params.slug;
+  const sampleMode = searchParams.get("sample") === "1";
+  const scanMode = searchParams.get("scan") === "1" || searchParams.get("source") === "scan";
+  const fromFirstScan = searchParams.get("firstScan") === "1";
+  const scanTier = searchParams.get("tier");
+  const matchedBy = searchParams.get("matchedBy");
 
-  const { preferences, favorites, shoppingList, toggleFavorite, toggleShoppingList, setCompareSelection, addRecentScan } = useAppState();
+  const {
+    preferences,
+    favorites,
+    shoppingList,
+    toggleFavorite,
+    toggleShoppingList,
+    setCompareSelection,
+    addRecentScan,
+    markSampleResultViewed,
+    markFirstMeaningfulInteraction,
+    trackResultContextScan,
+    openPremiumPreview,
+    premium,
+    onboarding
+  } = useAppState();
 
   const product = getProductBySlug(slug);
   if (!product) {
@@ -39,6 +60,12 @@ export default function ProductPage() {
     addRecentScan(product.slug);
   }, [addRecentScan, product.slug]);
 
+  useEffect(() => {
+    if (sampleMode && !onboarding.sampleResultViewed) {
+      markSampleResultViewed();
+    }
+  }, [sampleMode, markSampleResultViewed, onboarding.sampleResultViewed]);
+
   const whatMatters = [
     `Added sugar sits at ${product.addedSugarG}g`,
     `Fiber provides ${product.fiberG}g support`,
@@ -47,6 +74,26 @@ export default function ProductPage() {
 
   return (
     <main className="shell section-gap pb-24">
+      {sampleMode ? (
+        <section className="card-state text-sm text-ink/75">
+          <p className="font-medium">Sample result preview</p>
+          <p className="mt-1">This preview shows how your active standards influence grade, “what matters most,” and healthier swaps.</p>
+        </section>
+      ) : null}
+
+      {scanMode ? (
+        <section className="card-narrative space-y-2 text-sm text-ink/75">
+          <p className="font-medium">{fromFirstScan ? "First real scan complete" : "Real scan result"}</p>
+          <p>Matched from live package signals: {matchedBy ?? "strong scan confidence alignment"}.</p>
+          <p>
+            This matters because it shortens aisle decisions while keeping your standards active for grade, explanation, and same-family swaps.
+          </p>
+          <p className="text-xs text-ink/60">
+            Preference influence: {onboarding.priorityTags.slice(0, 2).join(" · ") || "Household standards applied"}{scanTier ? ` · ${scanTier} confidence` : ""}.
+          </p>
+        </section>
+      ) : null}
+
       <section className="card-hero overflow-hidden">
         <div className="relative h-64 overflow-hidden rounded-[24px]">
           <Image src={product.image} alt={product.name} fill className="object-cover" />
@@ -66,6 +113,7 @@ export default function ProductPage() {
         <article className="card-narrative">
           <p className="eyebrow">Quick explanation</p>
           <p className="mt-1 text-sm leading-relaxed text-ink/80">{score.explanation}</p>
+          <p className="mt-1 text-xs text-ink/60">Active preference influence: {onboarding.priorityTags.slice(0, 2).join(" · ") || "Household standards applied"}.</p>
           <div className="mt-3 flex flex-wrap gap-2">
             {score.topReasons.slice(0, 3).map((reason) => (
               <ReasonChip key={reason} reason={reason} />
@@ -122,6 +170,7 @@ export default function ProductPage() {
               onCompare={() => {
                 setCompareSelection({ originalSlug: product.slug, alternativeSlug: alt.slug });
                 addRecentScan(product.slug);
+                markFirstMeaningfulInteraction("compare");
               }}
             />
           ))}
@@ -135,12 +184,39 @@ export default function ProductPage() {
         ))}
       </section>
 
+      <section className="card-state space-y-2 text-sm text-ink/75">
+        <p className="font-medium">Premium enhancements preview</p>
+        <p>Core results above stay fully free. Premium adds deeper swap rationale and richer retailer confidence context when you want more depth.</p>
+        {premium.premiumPreviewMode ? (
+          <p className="card-state blur-[1px] text-xs">
+            {premium.premiumTriggerSource === "extended_swaps" ? premiumSourceProof("extended_swaps") : premiumSourceProof("retailer_intel")}
+          </p>
+        ) : null}
+        <div className="flex gap-2">
+          <Link
+            className="btn-secondary inline-flex text-sm"
+            href="/premium?source=extended_swaps"
+            onClick={() => openPremiumPreview("extended_swaps")}
+          >
+            Deeper swaps
+          </Link>
+          <Link
+            className="btn-secondary inline-flex text-sm"
+            href="/premium?source=retailer_intel"
+            onClick={() => openPremiumPreview("retailer_intel")}
+          >
+            Retailer layer
+          </Link>
+        </div>
+      </section>
+
       <div className="grid grid-cols-2 gap-3">
         <button
           className="btn-primary"
           onClick={() => {
             toggleFavorite(product.slug);
             addRecentScan(product.slug);
+            markFirstMeaningfulInteraction("save");
           }}
         >
           {isFavorite ? "Saved" : "Save to favorites"}
@@ -150,7 +226,16 @@ export default function ProductPage() {
         </button>
       </div>
 
-      <Link href={`/report/${product.slug}`} className="card-state block text-sm text-ink/80">View full ingredient report</Link>
+      <div className="grid grid-cols-2 gap-3">
+        <Link className="btn-secondary text-center text-sm" href={`/report/${product.slug}`}>View ingredient report</Link>
+        <Link
+          className="btn-secondary text-center text-sm"
+          href="/scan"
+          onClick={() => trackResultContextScan()}
+        >
+          Scan another
+        </Link>
+      </div>
     </main>
   );
 }

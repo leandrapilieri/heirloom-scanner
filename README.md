@@ -16,6 +16,7 @@ Premium, mobile-first Next.js MVP for scanning kids snacks and surfacing healthi
 - `/preferences`
 - `/compare`
 - `/report/[slug]`
+- `/premium`
 
 ## Local-first storage architecture
 This app intentionally runs without accounts or a backend database in v1.
@@ -52,6 +53,63 @@ Local onboarding state includes:
 - `resultEducationSeen`
 
 Users can reset and rerun onboarding from `/preferences`.
+
+
+## First-session success flow
+After onboarding completion, first session is guided with local state:
+- setup summary banner appears on `/scan` until dismissed
+- first successful real scan triggers a brief premium reveal (about 900ms), then transitions directly to `/product/[slug]`
+- resolved and confirm-needed + candidate-confirmed scans use the same reveal-to-result payoff handoff
+- sample result path (`/product/[slug]?sample=1`) is treated as intentional preview
+- first meaningful interaction is tracked locally when user completes:
+  - first save, or
+  - first compare, or
+  - second scan from a result context
+
+Persisted first-session flags are part of onboarding state and include:
+- `setupSummarySeen`
+- `sampleResultViewed`
+- `firstScanCompleted`
+- `firstMeaningfulInteractionCompleted`
+- `firstMeaningfulInteractionType`
+- `resultContextScanSeen`
+
+Real scan result context is passed as lightweight query params (`source=scan`, `scan=1`, `tier`, `matchedBy`, optional `firstScan=1`) so `/product/[slug]` can render a concise recap:
+- why this matched
+- why this matters in-aisle
+- how active preferences influenced the result
+
+Sample mode remains useful (`?sample=1`) but is positioned as a secondary preview path.
+
+## Soft premium-access experiment (local-first)
+This build includes a calm premium-access UX experiment with no auth and no billing backend.
+
+Trigger logic (named constants + local state):
+- premium prompt can trigger only after `firstMeaningfulInteractionCompleted === true`
+- premium prompt can trigger only on deeper surfaces:
+  - `/report/[slug]`
+  - advanced compare insights area on `/compare`
+- prompt is suppressed during cooldown after dismissal (`PREMIUM_PROMPT_COOLDOWN_DAYS` in `lib/premium-access.ts`)
+- prompt copy is context-specific by trigger source (`report`, `compare_insights`, `extended_swaps`, `retailer_intel`)
+
+Free surfaces remain fully valuable:
+- onboarding, scan flows, first-session payoff, product result basics, core swaps, basic retailer list, favorites, and basic compare
+
+Premium-preview/gated surfaces:
+- advanced ingredient intelligence in report
+- extended swap intelligence beyond core swaps
+- advanced compare insights section (compare page itself stays free)
+- enhanced retailer intelligence module
+- product page teaser pressure is intentionally reduced to a single compact premium-enhancements module (not multiple stacked teaser cards)
+
+Persisted premium state:
+- `premiumPromptSeen`
+- `premiumPromptDismissedAt`
+- `premiumPromptCooldownUntil`
+- `premiumTriggerSource`
+- `premiumPreviewMode`
+
+Billing remains mocked; `/premium` is a styling + trigger experiment only.
 
 ## Service layer (mocked, integration-ready)
 Service modules under `lib/services` keep UI and data concerns separate:

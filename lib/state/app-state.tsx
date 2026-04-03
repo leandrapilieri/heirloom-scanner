@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useMemo } from "react";
+import { PREMIUM_PROMPT_COOLDOWN_MS, PremiumTriggerSource } from "@/lib/premium-access";
 import { defaultPreferences } from "@/lib/preferences";
 import { storageKeys } from "@/lib/storage";
 import { useLocalState } from "@/lib/state/use-local-state";
@@ -29,13 +30,37 @@ export interface OnboardingState {
   onboardingPrimaryConcern?: "sugar" | "additives" | "allergies" | "speed";
   priorityTags: string[];
   resultEducationSeen: boolean;
+  setupSummarySeen: boolean;
+  sampleResultViewed: boolean;
+  firstScanCompleted: boolean;
+  firstMeaningfulInteractionCompleted: boolean;
+  firstMeaningfulInteractionType?: "save" | "compare" | "second_result_scan";
+  resultContextScanSeen: boolean;
 }
 
 const onboardingDefaults: OnboardingState = {
   onboardingCompleted: false,
   onboardingVersion: 1,
   priorityTags: [],
-  resultEducationSeen: false
+  resultEducationSeen: false,
+  setupSummarySeen: false,
+  sampleResultViewed: false,
+  firstScanCompleted: false,
+  firstMeaningfulInteractionCompleted: false,
+  resultContextScanSeen: false
+};
+
+export interface PremiumState {
+  premiumPromptSeen: boolean;
+  premiumPromptDismissedAt?: string;
+  premiumPromptCooldownUntil?: string;
+  premiumTriggerSource?: PremiumTriggerSource;
+  premiumPreviewMode: boolean;
+}
+
+const premiumDefaults: PremiumState = {
+  premiumPromptSeen: false,
+  premiumPreviewMode: false
 };
 
 interface AppStateContextValue {
@@ -54,9 +79,19 @@ interface AppStateContextValue {
   recordScanOutcome: (outcome: ScanOutcome) => void;
   confirmScanOutcome: (id: string, slug: string) => void;
   onboarding: OnboardingState;
+  premium: PremiumState;
   setOnboardingConcern: (concern: OnboardingState["onboardingPrimaryConcern"]) => void;
   togglePriorityTag: (tag: string) => void;
   markResultEducationSeen: () => void;
+  markSampleResultViewed: () => void;
+  markFirstScanCompleted: () => void;
+  trackResultContextScan: () => void;
+  markFirstMeaningfulInteraction: (type: "save" | "compare") => void;
+  dismissSetupSummary: () => void;
+  maybeTriggerPremiumPrompt: (source: PremiumTriggerSource) => boolean;
+  dismissPremiumPrompt: () => void;
+  openPremiumPreview: (source: PremiumTriggerSource) => void;
+  closePremiumPreview: () => void;
   completeOnboarding: () => void;
   resetOnboarding: () => void;
 }
@@ -74,6 +109,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   });
   const scanOutcomeState = useLocalState<ScanOutcome[]>(storageKeys.scanOutcomes, []);
   const onboardingState = useLocalState<OnboardingState>(storageKeys.onboarding, onboardingDefaults);
+  const premiumState = useLocalState<PremiumState>(storageKeys.premium, premiumDefaults);
 
   const hydrated =
     prefState.hydrated &&
@@ -82,7 +118,8 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     recentState.hydrated &&
     compareState.hydrated &&
     scanOutcomeState.hydrated &&
-    onboardingState.hydrated;
+    onboardingState.hydrated &&
+    premiumState.hydrated;
 
   const value = useMemo<AppStateContextValue>(
     () => ({
@@ -113,6 +150,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         scanOutcomeState.setState((prev) => prev.map((outcome) => (outcome.id === id ? { ...outcome, confirmedCandidateSlug: slug } : outcome)));
       },
       onboarding: onboardingState.state,
+      premium: premiumState.state,
       setOnboardingConcern: (concern) => {
         onboardingState.setState((prev) => ({ ...prev, onboardingPrimaryConcern: concern }));
       },
@@ -127,12 +165,73 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       markResultEducationSeen: () => {
         onboardingState.setState((prev) => ({ ...prev, resultEducationSeen: true }));
       },
+      markSampleResultViewed: () => {
+        onboardingState.setState((prev) => ({ ...prev, sampleResultViewed: true }));
+      },
+      markFirstScanCompleted: () => {
+        onboardingState.setState((prev) => ({ ...prev, firstScanCompleted: true }));
+      },
+      trackResultContextScan: () => {
+        onboardingState.setState((prev) => {
+          const nowMeaningful = prev.resultContextScanSeen;
+          return {
+            ...prev,
+            resultContextScanSeen: true,
+            firstMeaningfulInteractionCompleted: prev.firstMeaningfulInteractionCompleted || nowMeaningful,
+            firstMeaningfulInteractionType: prev.firstMeaningfulInteractionType ?? (nowMeaningful ? "second_result_scan" : undefined)
+          };
+        });
+      },
+      markFirstMeaningfulInteraction: (type) => {
+        onboardingState.setState((prev) => ({
+          ...prev,
+          firstMeaningfulInteractionCompleted: true,
+          firstMeaningfulInteractionType: prev.firstMeaningfulInteractionType ?? type
+        }));
+      },
+      dismissSetupSummary: () => {
+        onboardingState.setState((prev) => ({ ...prev, setupSummarySeen: true }));
+      },
+      maybeTriggerPremiumPrompt: (source) => {
+        if (!onboardingState.state.firstMeaningfulInteractionCompleted) return false;
+        const cooldownUntil = premiumState.state.premiumPromptCooldownUntil;
+        if (cooldownUntil && new Date(cooldownUntil).getTime() > Date.now()) return false;
+        premiumState.setState((prev) => ({
+          ...prev,
+          premiumPromptSeen: true,
+          premiumTriggerSource: source,
+          premiumPreviewMode: true
+        }));
+        return true;
+      },
+      dismissPremiumPrompt: () => {
+        const now = new Date();
+        const cooldownUntil = new Date(now.getTime() + PREMIUM_PROMPT_COOLDOWN_MS).toISOString();
+        premiumState.setState((prev) => ({
+          ...prev,
+          premiumPromptDismissedAt: now.toISOString(),
+          premiumPromptCooldownUntil: cooldownUntil,
+          premiumPreviewMode: false
+        }));
+      },
+      openPremiumPreview: (source) => {
+        premiumState.setState((prev) => ({
+          ...prev,
+          premiumPromptSeen: true,
+          premiumTriggerSource: source,
+          premiumPreviewMode: true
+        }));
+      },
+      closePremiumPreview: () => {
+        premiumState.setState((prev) => ({ ...prev, premiumPreviewMode: false }));
+      },
       completeOnboarding: () => {
         onboardingState.setState((prev) => ({
           ...prev,
           onboardingCompleted: true,
           completedAt: new Date().toISOString(),
-          onboardingVersion: onboardingDefaults.onboardingVersion
+          onboardingVersion: onboardingDefaults.onboardingVersion,
+          setupSummarySeen: false
         }));
       },
       resetOnboarding: () => {
@@ -154,7 +253,9 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       scanOutcomeState.state,
       scanOutcomeState.setState,
       onboardingState.state,
-      onboardingState.setState
+      onboardingState.setState,
+      premiumState.state,
+      premiumState.setState
     ]
   );
 

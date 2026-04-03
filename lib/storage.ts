@@ -5,7 +5,8 @@ export const storageKeys = {
   shoppingList: "heirloom.shoppingList",
   compareSelection: "heirloom.compareSelection",
   scanOutcomes: "heirloom.scanOutcomes",
-  onboarding: "heirloom.onboarding"
+  onboarding: "heirloom.onboarding",
+  premium: "heirloom.premium"
 } as const;
 
 function hasWindow() {

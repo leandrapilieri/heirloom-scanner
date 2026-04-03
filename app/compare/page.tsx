@@ -1,7 +1,10 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 import { ComparisonMetric } from "@/components/premium";
+import { premiumSourceProof, premiumSourcePrompt } from "@/lib/premium-copy";
 import { listProducts } from "@/lib/services/product-catalog";
 import { useAppState } from "@/lib/state/app-state";
 import { scoreProduct } from "@/lib/scoring";
@@ -12,8 +15,10 @@ function reasonLabel(original: number, alternative: number, betterWhenLower = tr
 }
 
 export default function ComparePage() {
-  const { compareSelection, preferences } = useAppState();
+  const { compareSelection, preferences, premium, maybeTriggerPremiumPrompt, dismissPremiumPrompt, closePremiumPreview } = useAppState();
   const all = listProducts();
+  const [showPremiumPrompt, setShowPremiumPrompt] = useState(false);
+  const checkedPromptRef = useRef(false);
 
   const original = all.find((product) => product.slug === compareSelection.originalSlug) ?? all[0];
   const alternative = all.find((product) => product.slug === compareSelection.alternativeSlug && product.slug !== original.slug) ?? all[1];
@@ -21,6 +26,16 @@ export default function ComparePage() {
   const left = scoreProduct(original, preferences);
   const right = scoreProduct(alternative, preferences);
   const healthierWins = right.numericScore >= left.numericScore;
+  const addedSugarDelta = Math.max(0, original.addedSugarG - alternative.addedSugarG);
+  const addedSugarPercent = original.addedSugarG > 0 ? Math.round((addedSugarDelta / original.addedSugarG) * 100) : 0;
+  const additiveDelta = Math.max(0, original.additives.length - alternative.additives.length);
+
+  useEffect(() => {
+    if (checkedPromptRef.current) return;
+    checkedPromptRef.current = true;
+    const shouldPrompt = maybeTriggerPremiumPrompt("compare_insights");
+    setShowPremiumPrompt(shouldPrompt);
+  }, [maybeTriggerPremiumPrompt]);
 
   return (
     <main className="shell section-gap">
@@ -73,6 +88,43 @@ export default function ComparePage() {
           value={`${original.retailerAvailability.filter((r) => r.inStock).length} vs ${alternative.retailerAvailability.filter((r) => r.inStock).length}`}
           note="In-stock stores"
         />
+      </section>
+
+      {showPremiumPrompt ? (
+        <section className="card-narrative space-y-2 text-sm text-ink/75">
+          <p className="font-medium">Unlock richer compare insights</p>
+          <p>{premiumSourcePrompt("compare_insights")}</p>
+          <p className="text-xs text-ink/60">{premiumSourceProof("compare_insights")}</p>
+          <div className="flex gap-2">
+            <Link className="btn-primary text-sm" href="/premium?source=compare_insights">View Premium</Link>
+            <button
+              className="btn-secondary text-sm"
+              onClick={() => {
+                dismissPremiumPrompt();
+                setShowPremiumPrompt(false);
+              }}
+            >
+              Not now
+            </button>
+          </div>
+        </section>
+      ) : null}
+
+      <section className="card-state space-y-2 text-sm text-ink/75">
+        <p className="font-medium">Advanced compare insights</p>
+        {premium.premiumPreviewMode && premium.premiumTriggerSource === "compare_insights" ? (
+          <>
+            <p>Previewing premium: deeper ingredient overlap diagnostics, confidence-weighted swap fit, and retailer value context.</p>
+            <p className="card-state blur-[1px] text-xs">{premiumSourceProof("compare_insights")}</p>
+            <p className="card-state blur-[1px] text-xs">
+              Locked insight: {addedSugarPercent}% lower added sugar and {additiveDelta} fewer flagged additives in this current comparison pair.
+            </p>
+            <Link className="btn-secondary text-sm inline-flex" href="/premium?source=compare_insights">Unlock this layer</Link>
+          </>
+        ) : (
+          <p>This deeper analysis is part of premium preview. Core compare remains fully free and active.</p>
+        )}
+        <button className="text-xs underline" onClick={() => closePremiumPreview()}>Hide premium preview</button>
       </section>
     </main>
   );

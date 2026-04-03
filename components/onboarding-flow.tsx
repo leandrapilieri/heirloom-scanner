@@ -153,7 +153,7 @@ export function OnboardingFlow() {
               className="btn-secondary"
               onClick={() => {
                 completeOnboarding();
-                router.push("/product/little-orchard-cocoa-creme-minis");
+                router.push("/product/little-orchard-cocoa-creme-minis?sample=1");
               }}
             >
               View sample result
