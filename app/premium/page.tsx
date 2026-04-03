@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { PremiumTriggerSource } from "@/lib/premium-access";
@@ -19,7 +20,7 @@ const plans = [
   }
 ];
 
-export default function PremiumPage() {
+function PremiumPageContent() {
   const searchParams = useSearchParams();
   const source = (searchParams.get("source") as PremiumTriggerSource | null) ?? "premium_preview";
   const { dismissPremiumPrompt, closePremiumPreview, preferences } = useAppState();
@@ -86,5 +87,27 @@ export default function PremiumPage() {
         </div>
       </section>
     </main>
+  );
+}
+
+function PremiumPageFallback() {
+  return (
+    <main className="shell section-gap pb-24">
+      <header className="card-hero space-y-3">
+        <p className="pill-accent inline-flex">Heirloom Premium</p>
+        <h1 className="display text-3xl leading-tight">A calmer intelligence layer for family grocery decisions</h1>
+        <p className="text-sm text-ink/70">
+          Unlock deeper ingredient intelligence, richer compare insights, advanced swaps, and enhanced retailer context.
+        </p>
+      </header>
+    </main>
+  );
+}
+
+export default function PremiumPage() {
+  return (
+    <Suspense fallback={<PremiumPageFallback />}>
+      <PremiumPageContent />
+    </Suspense>
   );
 }
