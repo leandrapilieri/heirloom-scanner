@@ -181,6 +181,20 @@ export default function ScanPage() {
     });
   };
 
+  const showFailureRecovery = statusMessage === "No clear match found";
+
+  const handleManualRecovery = () => {
+    manualSearchRef.current?.focus();
+    document.getElementById("manual-fallback")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const handleRetry = () => {
+    clearPendingReveal();
+    setConfirmCandidates([]);
+    setStatusMessage("Ready to scan");
+    setConfidenceLabel("High confidence match");
+  };
+
   return (
     <main className="shell section-gap">
       <header className="space-y-2">
@@ -248,6 +262,17 @@ export default function ScanPage() {
           <div className="absolute left-4 top-4 rounded-full bg-white/85 px-3 py-1 text-xs text-ink/75">{confidenceLabel}</div>
           <div className="absolute bottom-4 right-4 rounded-full bg-accent/10 px-3 py-1 text-xs text-accent">Deterministic match model</div>
         </div>
+
+        {showFailureRecovery ? (
+          <div className="card-state space-y-2 border-accent/25 bg-[#fff8f5] text-sm text-ink/80">
+            <p className="font-medium text-ink">Need a hand finding the right match?</p>
+            <p>Search manually for the product name to get to a result quickly.</p>
+            <div className="grid grid-cols-2 gap-2">
+              <button className="btn-primary text-sm" onClick={handleManualRecovery} type="button">Search manually</button>
+              <button className="btn-secondary text-sm" onClick={handleRetry} type="button">Try again</button>
+            </div>
+          </div>
+        ) : null}
 
         <div className="grid grid-cols-3 gap-2 text-center text-xs">
           <button className="pill" onClick={() => runScan({ barcode: all[0].barcode })} type="button">Barcode</button>
