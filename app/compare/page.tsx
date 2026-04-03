@@ -2,9 +2,10 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ComparisonMetric } from "@/components/premium";
 import { premiumSourceProof, premiumSourcePrompt } from "@/lib/premium-copy";
+import { getAlternativeProducts } from "@/lib/services/alternative-engine";
 import { listProducts } from "@/lib/services/product-catalog";
 import { useAppState } from "@/lib/state/app-state";
 import { scoreProduct } from "@/lib/scoring";
@@ -15,7 +16,16 @@ function reasonLabel(original: number, alternative: number, betterWhenLower = tr
 }
 
 export default function ComparePage() {
-  const { compareSelection, preferences, premium, maybeTriggerPremiumPrompt, dismissPremiumPrompt, closePremiumPreview } = useAppState();
+  const {
+    compareSelection,
+    recentScans,
+    setCompareSelection,
+    preferences,
+    premium,
+    maybeTriggerPremiumPrompt,
+    dismissPremiumPrompt,
+    closePremiumPreview
+  } = useAppState();
   const all = listProducts();
   const [showPremiumPrompt, setShowPremiumPrompt] = useState(false);
   const checkedPromptRef = useRef(false);
@@ -24,6 +34,28 @@ export default function ComparePage() {
   const alternative = compareSelection.alternativeSlug
     ? all.find((product) => product.slug === compareSelection.alternativeSlug && product.slug !== compareSelection.originalSlug)
     : null;
+  const fallbackPair = useMemo(() => {
+    if (original && alternative) return null;
+    const recentProduct = recentScans.map((slug) => all.find((product) => product.slug === slug)).find(Boolean);
+    if (!recentProduct) return null;
+    const suggestedAlternative = getAlternativeProducts(recentProduct, preferences, 1)[0];
+    if (!suggestedAlternative || suggestedAlternative.slug === recentProduct.slug) return null;
+    return {
+      original: recentProduct,
+      alternative: suggestedAlternative
+    };
+  }, [all, alternative, original, preferences, recentScans]);
+  const effectiveOriginal = original ?? fallbackPair?.original ?? null;
+  const effectiveAlternative = alternative ?? fallbackPair?.alternative ?? null;
+
+  useEffect(() => {
+    if (original && alternative) return;
+    if (!fallbackPair) return;
+    setCompareSelection({
+      originalSlug: fallbackPair.original.slug,
+      alternativeSlug: fallbackPair.alternative.slug
+    });
+  }, [alternative, fallbackPair, original, setCompareSelection]);
 
   useEffect(() => {
     if (checkedPromptRef.current) return;
@@ -32,7 +64,7 @@ export default function ComparePage() {
     setShowPremiumPrompt(shouldPrompt);
   }, [maybeTriggerPremiumPrompt]);
 
-  if (!original || !alternative) {
+  if (!effectiveOriginal || !effectiveAlternative) {
     return (
       <main className="shell section-gap">
         <header className="space-y-2">
@@ -52,12 +84,12 @@ export default function ComparePage() {
     );
   }
 
-  const left = scoreProduct(original, preferences);
-  const right = scoreProduct(alternative, preferences);
+  const left = scoreProduct(effectiveOriginal, preferences);
+  const right = scoreProduct(effectiveAlternative, preferences);
   const healthierWins = right.numericScore >= left.numericScore;
-  const addedSugarDelta = Math.max(0, original.addedSugarG - alternative.addedSugarG);
-  const addedSugarPercent = original.addedSugarG > 0 ? Math.round((addedSugarDelta / original.addedSugarG) * 100) : 0;
-  const additiveDelta = Math.max(0, original.additives.length - alternative.additives.length);
+  const addedSugarDelta = Math.max(0, effectiveOriginal.addedSugarG - effectiveAlternative.addedSugarG);
+  const addedSugarPercent = effectiveOriginal.addedSugarG > 0 ? Math.round((addedSugarDelta / effectiveOriginal.addedSugarG) * 100) : 0;
+  const additiveDelta = Math.max(0, effectiveOriginal.additives.length - effectiveAlternative.additives.length);
 
   return (
     <main className="shell section-gap">
@@ -69,7 +101,7 @@ export default function ComparePage() {
 
       <section className="card-hero space-y-4">
         <div className="grid grid-cols-2 gap-3">
-          {[{ p: original, s: left, label: "Original" }, { p: alternative, s: right, label: "Healthier swap" }].map(({ p, s, label }) => {
+          {[{ p: effectiveOriginal, s: left, label: "Original" }, { p: effectiveAlternative, s: right, label: "Healthier swap" }].map(({ p, s, label }) => {
             const isWinner = label === "Healthier swap" ? healthierWins : !healthierWins;
 
             return (
@@ -93,21 +125,21 @@ export default function ComparePage() {
       <section className="card-narrative space-y-3">
         <h2 className="display text-xl">Why the swap can be better</h2>
         <div className="flex flex-wrap gap-2">
-          <span className="pill">{reasonLabel(original.addedSugarG, alternative.addedSugarG)} added sugar</span>
-          <span className="pill">{reasonLabel(original.fiberG, alternative.fiberG, false)} fiber support</span>
-          <span className="pill">{alternative.ingredients.length <= original.ingredients.length ? "Cleaner ingredient list" : "Ingredient list is comparable"}</span>
+          <span className="pill">{reasonLabel(effectiveOriginal.addedSugarG, effectiveAlternative.addedSugarG)} added sugar</span>
+          <span className="pill">{reasonLabel(effectiveOriginal.fiberG, effectiveAlternative.fiberG, false)} fiber support</span>
+          <span className="pill">{effectiveAlternative.ingredients.length <= effectiveOriginal.ingredients.length ? "Cleaner ingredient list" : "Ingredient list is comparable"}</span>
           <span className="pill">{right.grade === "A+" || right.grade === "A" ? "Better lunchbox option" : "Occasional treat tier"}</span>
         </div>
-        <p className="text-sm leading-relaxed text-ink/70">{healthierWins ? `${alternative.name} edges ahead with a stronger overall nutrition profile and cleaner badge mix.` : `${original.name} currently remains the stronger choice based on this score model.`}</p>
+        <p className="text-sm leading-relaxed text-ink/70">{healthierWins ? `${effectiveAlternative.name} edges ahead with a stronger overall nutrition profile and cleaner badge mix.` : `${effectiveOriginal.name} currently remains the stronger choice based on this score model.`}</p>
       </section>
 
       <section className="grid grid-cols-2 gap-3 text-sm">
-        <ComparisonMetric label="Added sugar" value={`${original.addedSugarG}g vs ${alternative.addedSugarG}g`} note="Lower is better" />
-        <ComparisonMetric label="Fiber" value={`${original.fiberG}g vs ${alternative.fiberG}g`} note="Higher helps fullness" />
-        <ComparisonMetric label="Additives" value={`${original.additives.length} vs ${alternative.additives.length}`} note="Fewer is gentler" />
+        <ComparisonMetric label="Added sugar" value={`${effectiveOriginal.addedSugarG}g vs ${effectiveAlternative.addedSugarG}g`} note="Lower is better" />
+        <ComparisonMetric label="Fiber" value={`${effectiveOriginal.fiberG}g vs ${effectiveAlternative.fiberG}g`} note="Higher helps fullness" />
+        <ComparisonMetric label="Additives" value={`${effectiveOriginal.additives.length} vs ${effectiveAlternative.additives.length}`} note="Fewer is gentler" />
         <ComparisonMetric
           label="Retailer stock"
-          value={`${original.retailerAvailability.filter((r) => r.inStock).length} vs ${alternative.retailerAvailability.filter((r) => r.inStock).length}`}
+          value={`${effectiveOriginal.retailerAvailability.filter((r) => r.inStock).length} vs ${effectiveAlternative.retailerAvailability.filter((r) => r.inStock).length}`}
           note="In-stock stores"
         />
       </section>
