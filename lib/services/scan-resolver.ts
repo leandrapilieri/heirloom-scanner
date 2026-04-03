@@ -276,6 +276,21 @@ export function resolveScan(input: ScanInput): ScanResolution {
           }
         };
       }
+
+      return {
+        status: "confirm_needed",
+        confidence: barcodeCandidate.confidence,
+        confidenceTier: barcodeCandidate.confidenceTier,
+        method,
+        candidateSlug: barcodeCandidate.slug,
+        message: "Barcode matched but we detected a conflicting text hint",
+        candidates: [barcodeCandidate],
+        debug: {
+          ambiguityGap: 1,
+          conflictFlags,
+          reasons: ["Exact barcode matched, but text hint pointed to a different brand"]
+        }
+      };
     }
   }
 

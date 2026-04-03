@@ -64,6 +64,14 @@ export default function ScanPage() {
     }
   };
 
+  const clearPendingReveal = () => {
+    if (revealTimeoutRef.current) {
+      window.clearTimeout(revealTimeoutRef.current);
+      revealTimeoutRef.current = null;
+    }
+    setRevealState(null);
+  };
+
   const transitionToResult = ({
     slug,
     confidenceTier,
@@ -109,6 +117,7 @@ export default function ScanPage() {
   }, []);
 
   const runScan = (input: { barcode?: string; photoHint?: string; query?: string; categoryHint?: string }) => {
+    clearPendingReveal();
     const resolution = resolveScan(input);
     const attemptId = crypto.randomUUID();
     setLastAttemptId(attemptId);
@@ -149,6 +158,7 @@ export default function ScanPage() {
   };
 
   const confirmCandidate = (candidate: ScanCandidate) => {
+    clearPendingReveal();
     addRecentScan(candidate.slug);
     if (lastAttemptId) {
       confirmScanOutcome(lastAttemptId, candidate.slug);

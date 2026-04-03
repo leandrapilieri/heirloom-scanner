@@ -59,7 +59,22 @@ export default function ProductPage() {
   }, [sampleMode, markSampleResultViewed, onboarding.sampleResultViewed]);
 
   if (!product) {
-    return <main className="shell"><p className="card-state text-sm">Product not found.</p></main>;
+    return (
+      <main className="shell section-gap">
+        <section className="card-state space-y-3 text-sm text-ink/75">
+          <p className="font-medium text-ink">We couldn&apos;t find that product result.</p>
+          <p>The scan may be outdated or the link may no longer be available. You can jump right back into scanning.</p>
+          <div className="flex flex-wrap gap-2">
+            <Link className="btn-primary text-sm" href="/scan">
+              Scan again
+            </Link>
+            <Link className="btn-secondary text-sm" href="/">
+              Go home
+            </Link>
+          </div>
+        </section>
+      </main>
+    );
   }
 
   const score = scoreProduct(product, preferences);
