@@ -42,8 +42,18 @@ export default function ScanPage() {
     firstScan: boolean;
   } | null>(null);
   const revealTimeoutRef = useRef<number | null>(null);
+  const latestAttemptIdRef = useRef<string | null>(null);
+  const hasNavigatedForAttemptRef = useRef<string | null>(null);
   const manualBarcodeRef = useRef<HTMLInputElement | null>(null);
   const manualSearchRef = useRef<HTMLInputElement | null>(null);
+
+  const clearPendingReveal = () => {
+    if (revealTimeoutRef.current) {
+      window.clearTimeout(revealTimeoutRef.current);
+      revealTimeoutRef.current = null;
+    }
+    setRevealState(null);
+  };
 
   const activeSignals = useMemo(() => {
     const standards = [
@@ -64,23 +74,18 @@ export default function ScanPage() {
     }
   };
 
-  const clearPendingReveal = () => {
-    if (revealTimeoutRef.current) {
-      window.clearTimeout(revealTimeoutRef.current);
-      revealTimeoutRef.current = null;
-    }
-    setRevealState(null);
-  };
-
   const transitionToResult = ({
+    attemptId,
     slug,
     confidenceTier,
     reason
   }: {
+    attemptId: string;
     slug: string;
     confidenceTier: ScanOutcome["confidenceTier"];
     reason: string;
   }) => {
+    if (latestAttemptIdRef.current !== attemptId) return;
     const firstScan = !onboarding.firstScanCompleted;
     completeFirstScanIfNeeded();
     setRevealState({ slug, confidenceTier, reason, firstScan });
@@ -90,6 +95,9 @@ export default function ScanPage() {
       window.clearTimeout(revealTimeoutRef.current);
     }
     revealTimeoutRef.current = window.setTimeout(() => {
+      if (latestAttemptIdRef.current !== attemptId) return;
+      if (hasNavigatedForAttemptRef.current === attemptId) return;
+      hasNavigatedForAttemptRef.current = attemptId;
       const params = new URLSearchParams({
         source: "scan",
         scan: "1",
@@ -117,10 +125,12 @@ export default function ScanPage() {
   }, []);
 
   const runScan = (input: { barcode?: string; photoHint?: string; query?: string; categoryHint?: string }) => {
-    clearPendingReveal();
     const resolution = resolveScan(input);
     const attemptId = crypto.randomUUID();
     setLastAttemptId(attemptId);
+    latestAttemptIdRef.current = attemptId;
+    hasNavigatedForAttemptRef.current = null;
+    clearPendingReveal();
 
     const outcome: ScanOutcome = {
       id: attemptId,
@@ -138,6 +148,7 @@ export default function ScanPage() {
       setConfirmCandidates([]);
       const bestReason = resolution.candidates[0]?.reason ?? "Strong packaging signal alignment";
       transitionToResult({
+        attemptId,
         slug: resolution.candidateSlug,
         confidenceTier: resolution.confidenceTier,
         reason: bestReason
@@ -158,13 +169,12 @@ export default function ScanPage() {
   };
 
   const confirmCandidate = (candidate: ScanCandidate) => {
-    clearPendingReveal();
+    if (!lastAttemptId) return;
     addRecentScan(candidate.slug);
-    if (lastAttemptId) {
-      confirmScanOutcome(lastAttemptId, candidate.slug);
-    }
+    confirmScanOutcome(lastAttemptId, candidate.slug);
     setConfirmCandidates([]);
     transitionToResult({
+      attemptId: lastAttemptId,
       slug: candidate.slug,
       confidenceTier: candidate.confidenceTier,
       reason: candidate.reason
