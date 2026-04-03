@@ -28,6 +28,7 @@ export default function ProductPage() {
     shoppingList,
     toggleFavorite,
     toggleShoppingList,
+    setCompareSelection,
     addRecentScan,
     markSampleResultViewed,
     markFirstMeaningfulInteraction,
@@ -132,9 +133,9 @@ export default function ProductPage() {
 
           <Link
             className="btn-primary mt-4 block text-center"
-            href={featuredAlternative ? `/product/${featuredAlternative.slug}` : "/compare"}
+            href={featuredAlternative ? `/product/${featuredAlternative.slug}` : "/scan"}
           >
-            {featuredAlternative ? "View healthier option" : "Compare healthier options"}
+            {featuredAlternative ? "View healthier option" : "Scan another product"}
           </Link>
 
           <div className="mt-3 flex items-center gap-4 text-xs text-ink/65">
@@ -190,6 +191,19 @@ export default function ProductPage() {
                 className="btn-secondary block border-sage/30 bg-white text-center text-sm font-medium shadow-sm"
               >
                 View healthier result
+              </Link>
+              <Link
+                href="/compare"
+                className="btn-secondary block border-sage/30 bg-white text-center text-sm font-medium shadow-sm"
+                onClick={() => {
+                  setCompareSelection({
+                    originalSlug: product.slug,
+                    alternativeSlug: featuredAlternative.slug
+                  });
+                  markFirstMeaningfulInteraction("compare");
+                }}
+              >
+                Compare this swap
               </Link>
             </article>
           ) : (

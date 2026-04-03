@@ -20,15 +20,10 @@ export default function ComparePage() {
   const [showPremiumPrompt, setShowPremiumPrompt] = useState(false);
   const checkedPromptRef = useRef(false);
 
-  const original = all.find((product) => product.slug === compareSelection.originalSlug) ?? all[0];
-  const alternative = all.find((product) => product.slug === compareSelection.alternativeSlug && product.slug !== original.slug) ?? all[1];
-
-  const left = scoreProduct(original, preferences);
-  const right = scoreProduct(alternative, preferences);
-  const healthierWins = right.numericScore >= left.numericScore;
-  const addedSugarDelta = Math.max(0, original.addedSugarG - alternative.addedSugarG);
-  const addedSugarPercent = original.addedSugarG > 0 ? Math.round((addedSugarDelta / original.addedSugarG) * 100) : 0;
-  const additiveDelta = Math.max(0, original.additives.length - alternative.additives.length);
+  const original = compareSelection.originalSlug ? all.find((product) => product.slug === compareSelection.originalSlug) : null;
+  const alternative = compareSelection.alternativeSlug
+    ? all.find((product) => product.slug === compareSelection.alternativeSlug && product.slug !== compareSelection.originalSlug)
+    : null;
 
   useEffect(() => {
     if (checkedPromptRef.current) return;
@@ -36,6 +31,33 @@ export default function ComparePage() {
     const shouldPrompt = maybeTriggerPremiumPrompt("compare_insights");
     setShowPremiumPrompt(shouldPrompt);
   }, [maybeTriggerPremiumPrompt]);
+
+  if (!original || !alternative) {
+    return (
+      <main className="shell section-gap">
+        <header className="space-y-2">
+          <p className="pill-accent inline-flex">Decision sheet</p>
+          <h1 className="display text-3xl leading-tight">Compare for this grocery moment</h1>
+          <p className="text-sm leading-relaxed text-ink/70">Select a product and featured healthier swap from a product result page to start a truthful compare.</p>
+        </header>
+
+        <section className="card-state space-y-3 text-sm text-ink/75">
+          <p className="font-medium text-ink">No comparison selected yet.</p>
+          <p>Open any product result and tap the compare action on its featured healthier swap.</p>
+          <Link className="btn-primary text-sm" href="/scan">
+            Scan a product
+          </Link>
+        </section>
+      </main>
+    );
+  }
+
+  const left = scoreProduct(original, preferences);
+  const right = scoreProduct(alternative, preferences);
+  const healthierWins = right.numericScore >= left.numericScore;
+  const addedSugarDelta = Math.max(0, original.addedSugarG - alternative.addedSugarG);
+  const addedSugarPercent = original.addedSugarG > 0 ? Math.round((addedSugarDelta / original.addedSugarG) * 100) : 0;
+  const additiveDelta = Math.max(0, original.additives.length - alternative.additives.length);
 
   return (
     <main className="shell section-gap">
