@@ -226,6 +226,7 @@ export default function ProductPage() {
                   product={alt}
                   primaryHref={`/product/${alt.slug}`}
                   ctaLabel="View healthier result"
+                  preferences={preferences}
                 />
               ))}
             </div>

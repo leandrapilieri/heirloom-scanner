@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { scoreProduct } from "@/lib/scoring";
-import { Product } from "@/lib/types";
+import { GuardianPreferences, Product } from "@/lib/types";
 
 type Severity = "clean" | "caution" | "concern";
 
@@ -62,13 +62,15 @@ export function RetailerRow({
 export function RecommendationModule({
   product,
   primaryHref,
-  ctaLabel = "View healthier result"
+  ctaLabel = "View healthier result",
+  preferences
 }: {
   product: Product;
   primaryHref: string;
   ctaLabel?: string;
+  preferences?: GuardianPreferences;
 }) {
-  const score = scoreProduct(product);
+  const score = scoreProduct(product, preferences);
   const reasons = [
     product.addedSugarG <= 5 ? "Lower added sugar" : "Moderate sugar profile",
     product.additives.length <= 1 ? "Cleaner ingredient list" : "Contains a few additives",
