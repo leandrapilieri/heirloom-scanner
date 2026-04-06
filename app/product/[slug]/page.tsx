@@ -149,6 +149,11 @@ export default function ProductPage() {
             >
               {isFavorite ? "Saved" : "Save"}
             </button>
+            {isFavorite ? (
+              <Link className="underline-offset-2 hover:underline" href="/favorites">
+                View pantry
+              </Link>
+            ) : null}
             <Link className="underline-offset-2 hover:underline" href={`/report/${product.slug}`}>
               Full report
             </Link>

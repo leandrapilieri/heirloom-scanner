@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { ProductCard } from "@/components/product-card";
 import { CatalogProduct, listProducts } from "@/lib/services/product-catalog";
 import { useAppState } from "@/lib/state/app-state";
@@ -10,6 +11,8 @@ export default function FavoritesPage() {
 
   const favoriteProducts = favorites.map((slug) => all.find((product) => product.slug === slug)).filter((product): product is CatalogProduct => Boolean(product));
   const recentProducts = recentScans.map((slug) => all.find((product) => product.slug === slug)).filter((product): product is CatalogProduct => Boolean(product));
+  const hasFavorites = favoriteProducts.length > 0;
+  const hasRecentScans = recentProducts.length > 0;
 
   return (
     <main className="shell section-gap">
@@ -31,14 +34,26 @@ export default function FavoritesPage() {
       </section>
 
       <section className="section-gap">
-        {(favoriteProducts.length ? favoriteProducts : all.slice(0, 4)).map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
+        {hasFavorites ? (
+          favoriteProducts.map((product) => <ProductCard key={product.id} product={product} />)
+        ) : (
+          <section className="card-state space-y-3 text-sm text-ink/75">
+            <h2 className="display text-xl text-ink">No saved staples yet</h2>
+            <p>Save from any product result to build your pantry shortlist.</p>
+            <Link className="btn-primary inline-flex text-sm" href="/scan">
+              Scan a snack
+            </Link>
+          </section>
+        )}
       </section>
 
       <section className="card-narrative text-sm">
         <h2 className="display text-xl">Recent scans</h2>
-        <p className="mt-1 leading-relaxed text-ink/75">{(recentProducts.length ? recentProducts : all.slice(0, 4)).map((item) => item.name).join(" · ")}</p>
+        {hasRecentScans ? (
+          <p className="mt-1 leading-relaxed text-ink/75">{recentProducts.map((item) => item.name).join(" · ")}</p>
+        ) : (
+          <p className="mt-1 leading-relaxed text-ink/75">No scans yet on this device. Start from Scan to generate your first result.</p>
+        )}
       </section>
     </main>
   );
