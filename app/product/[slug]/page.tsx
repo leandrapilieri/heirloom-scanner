@@ -302,14 +302,14 @@ export default function ProductPage() {
                 href="/premium?source=extended_swaps"
                 onClick={() => openPremiumPreview("extended_swaps")}
               >
-                Deeper swaps
+                Swap details
               </Link>
               <Link
                 className="btn-secondary inline-flex text-xs"
                 href="/premium?source=retailer_intel"
                 onClick={() => openPremiumPreview("retailer_intel")}
               >
-                Retailer layer
+                Retailer details
               </Link>
             </div>
           </details>

@@ -110,7 +110,7 @@ export default function ReportPage() {
           <p>{premiumSourcePrompt("report")}</p>
           <p className="text-xs text-ink/60">{premiumSourceProof("report")}</p>
           <div className="flex gap-2">
-            <Link className="btn-primary text-sm" href="/premium?source=report">View Premium</Link>
+            <Link className="btn-primary text-sm" href="/premium?source=report">View premium details</Link>
             <button
               className="btn-secondary text-sm"
               onClick={() => {
@@ -136,7 +136,7 @@ export default function ReportPage() {
             <p className="card-state blur-[1px]">
               Locked insight: {cleanerPercent}% cleaner flagged-additive profile available in this family ({flagDelta} fewer flagged additives).
             </p>
-            <Link className="btn-secondary inline-flex text-sm" href="/premium?source=report">Unlock this layer</Link>
+            <Link className="btn-secondary inline-flex text-sm" href="/premium?source=report">See premium preview options</Link>
           </div>
         ) : (
           <div className="space-y-2 text-sm text-ink/70">
