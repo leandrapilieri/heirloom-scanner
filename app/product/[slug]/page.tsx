@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { ReasonChip, RecommendationModule, RetailerRow, SeverityChip } from "@/components/premium";
 import { premiumSourceProof } from "@/lib/premium-copy";
@@ -14,7 +14,6 @@ import { scoreProduct } from "@/lib/scoring";
 
 export default function ProductPage() {
   const params = useParams<{ slug: string }>();
-  const router = useRouter();
   const searchParams = useSearchParams();
   const slug = params.slug;
   const sampleMode = searchParams.get("sample") === "1";
@@ -195,13 +194,12 @@ export default function ProductPage() {
                   <ReasonChip reason="Better fit for current household preferences" />
                 )}
               </div>
-              <button
-                type="button"
+              <Link
+                href={`/product/${featuredAlternative.slug}`}
                 className="btn-secondary relative z-10 block border-sage/30 bg-white text-center text-sm font-medium shadow-sm"
-                onClick={() => router.push(`/product/${featuredAlternative.slug}`)}
               >
                 {featuredIsHealthier ? "View healthier result" : "View alternative result"}
-              </button>
+              </Link>
               <Link
                 href={`/compare?original=${encodeURIComponent(product.slug)}&alternative=${encodeURIComponent(featuredAlternative.slug)}`}
                 className="btn-secondary block border-sage/30 bg-white text-center text-sm font-medium shadow-sm"
