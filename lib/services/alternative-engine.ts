@@ -12,12 +12,16 @@ function recommendationScore(product: CatalogProduct, preferences?: GuardianPref
 
 export function getAlternativeProducts(source: CatalogProduct, preferences?: GuardianPreferences, limit = 3): CatalogProduct[] {
   const candidates = listProducts().filter(
-    (product) => product.id !== source.id && product.category === source.category && product.subcategory === source.subcategory
+    (product) =>
+      product.id !== source.id &&
+      product.slug !== source.slug &&
+      product.category === source.category &&
+      product.subcategory === source.subcategory
   );
 
   if (!candidates.length) {
     return listProducts()
-      .filter((product) => product.id !== source.id && product.category === source.category)
+      .filter((product) => product.id !== source.id && product.slug !== source.slug && product.category === source.category)
       .sort((a, b) => recommendationScore(b, preferences) - recommendationScore(a, preferences))
       .slice(0, limit);
   }
