@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { ReasonChip, RecommendationModule, RetailerRow, SeverityChip } from "@/components/premium";
 import { premiumSourceProof } from "@/lib/premium-copy";
 import { getAlternativeProducts } from "@/lib/services/alternative-engine";
@@ -39,10 +39,13 @@ export default function ProductPage() {
   } = useAppState();
 
   const product = getProductBySlug(slug);
+  const lastTrackedRecentScanSlugRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!product) return;
+    if (lastTrackedRecentScanSlugRef.current === product.slug) return;
     addRecentScan(product.slug);
+    lastTrackedRecentScanSlugRef.current = product.slug;
   }, [addRecentScan, product]);
 
   useEffect(() => {
