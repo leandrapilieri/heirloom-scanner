@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -33,7 +32,6 @@ function isNavItemActive(currentPath: string, navHref: (typeof navItems)[number]
 
 export function MobileNav() {
   const pathname = usePathname() || "/";
-  const router = useRouter();
 
   return (
     <>
@@ -41,17 +39,16 @@ export function MobileNav() {
         {navItems.map((item) => {
           const isActive = isNavItemActive(pathname, item.href);
           return (
-            <button
-              type="button"
+            <a
               aria-current={isActive ? "page" : undefined}
               className={`rounded-full px-3 py-1.5 text-xs transition ${
                 isActive ? "bg-white text-ink shadow-sm" : "text-ink/65"
               }`}
-              onClick={() => router.push(item.href)}
+              href={item.href}
               key={item.href}
             >
               {item.label}
-            </button>
+            </a>
           );
         })}
       </nav>
@@ -60,7 +57,7 @@ export function MobileNav() {
           {navItems.map((item) => {
             const isActive = isNavItemActive(pathname, item.href);
             return (
-              <Link
+              <a
                 aria-current={isActive ? "page" : undefined}
                 className={`rounded-full px-3 py-1.5 text-xs transition ${
                   isActive ? "bg-white text-ink shadow-sm" : "text-ink/65 hover:text-ink"
@@ -69,7 +66,7 @@ export function MobileNav() {
                 key={item.href}
               >
                 {item.label}
-              </Link>
+              </a>
             );
           })}
         </div>
