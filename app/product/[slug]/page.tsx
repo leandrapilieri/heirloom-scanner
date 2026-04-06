@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { ReasonChip, RecommendationModule, RetailerRow, SeverityChip } from "@/components/premium";
 import { premiumSourceProof } from "@/lib/premium-copy";
@@ -14,6 +14,7 @@ import { scoreProduct } from "@/lib/scoring";
 
 export default function ProductPage() {
   const params = useParams<{ slug: string }>();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const slug = params.slug;
   const sampleMode = searchParams.get("sample") === "1";
@@ -134,12 +135,13 @@ export default function ProductPage() {
             </div>
           </div>
 
-          <Link
-            className="btn-primary mt-4 block text-center"
-            href={featuredAlternative ? `/product/${featuredAlternative.slug}` : "/scan"}
+          <button
+            type="button"
+            className="btn-primary mt-4 block w-full text-center"
+            onClick={() => router.push(featuredAlternative ? `/product/${featuredAlternative.slug}` : "/scan")}
           >
             {featuredAlternative ? (featuredIsHealthier ? "View healthier option" : "View alternative option") : "Scan another product"}
-          </Link>
+          </button>
 
           <div className="mt-3 flex items-center gap-4 text-xs text-ink/65">
             <button
@@ -194,25 +196,27 @@ export default function ProductPage() {
                   <ReasonChip reason="Better fit for current household preferences" />
                 )}
               </div>
-              <Link
-                href={`/product/${featuredAlternative.slug}`}
-                className="btn-secondary relative z-10 block border-sage/30 bg-white text-center text-sm font-medium shadow-sm"
+              <button
+                type="button"
+                className="btn-secondary relative z-10 block w-full border-sage/30 bg-white text-center text-sm font-medium shadow-sm"
+                onClick={() => router.push(`/product/${featuredAlternative.slug}`)}
               >
                 {featuredIsHealthier ? "View healthier result" : "View alternative result"}
-              </Link>
-              <Link
-                href={`/compare?original=${product.slug}&alternative=${featuredAlternative.slug}`}
-                className="btn-secondary block border-sage/30 bg-white text-center text-sm font-medium shadow-sm"
+              </button>
+              <button
+                type="button"
+                className="btn-secondary block w-full border-sage/30 bg-white text-center text-sm font-medium shadow-sm"
                 onClick={() => {
                   setCompareSelection({
                     originalSlug: product.slug,
                     alternativeSlug: featuredAlternative.slug
                   });
                   markFirstMeaningfulInteraction("compare");
+                  router.push(`/compare?original=${product.slug}&alternative=${featuredAlternative.slug}`);
                 }}
               >
                 Compare this swap
-              </Link>
+              </button>
             </article>
           ) : (
             <p className="text-sm text-ink/75">No same-family swap is available right now for this product.</p>
@@ -242,13 +246,16 @@ export default function ProductPage() {
             <button className="btn-secondary" onClick={() => toggleShoppingList(product.slug)}>
               {inShoppingList ? "In shopping list" : "Add to list"}
             </button>
-            <Link
+            <button
+              type="button"
               className="btn-secondary text-center text-sm"
-              href="/scan"
-              onClick={() => trackResultContextScan()}
+              onClick={() => {
+                trackResultContextScan();
+                router.push("/scan");
+              }}
             >
               Scan another
-            </Link>
+            </button>
           </div>
           <p className="mt-3 text-xs text-ink/60">
             Preference influence: {onboarding.priorityTags.slice(0, 2).join(" · ") || "Household standards applied"}.
