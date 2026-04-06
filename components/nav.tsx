@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -12,7 +12,6 @@ const navItems = [
 
 export function MobileNav() {
   const pathname = usePathname();
-  const router = useRouter();
 
   return (
     <>
@@ -25,10 +24,6 @@ export function MobileNav() {
                 isActive ? "bg-white text-ink shadow-sm" : "text-ink/65"
               }`}
               href={item.href}
-              onClick={(event) => {
-                event.preventDefault();
-                router.push(item.href);
-              }}
               key={item.href}
             >
               {item.label}
@@ -46,10 +41,6 @@ export function MobileNav() {
                   isActive ? "bg-white text-ink shadow-sm" : "text-ink/65 hover:text-ink"
                 }`}
                 href={item.href}
-                onClick={(event) => {
-                  event.preventDefault();
-                  router.push(item.href);
-                }}
                 key={item.href}
               >
                 {item.label}
