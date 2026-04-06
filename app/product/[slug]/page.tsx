@@ -196,7 +196,7 @@ export default function ProductPage() {
               </div>
               <Link
                 href={`/product/${featuredAlternative.slug}`}
-                className="btn-secondary block border-sage/30 bg-white text-center text-sm font-medium shadow-sm"
+                className="btn-secondary relative z-10 block border-sage/30 bg-white text-center text-sm font-medium shadow-sm"
               >
                 {featuredIsHealthier ? "View healthier result" : "View alternative result"}
               </Link>

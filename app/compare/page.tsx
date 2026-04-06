@@ -16,6 +16,7 @@ function reasonLabel(original: number, alternative: number, betterWhenLower = tr
 }
 
 function ComparePageContent() {
+  const searchParams = useSearchParams();
   const {
     compareSelection,
     preferences,
@@ -31,8 +32,8 @@ function ComparePageContent() {
 
   const queryOriginalSlug = searchParams.get("original");
   const queryAlternativeSlug = searchParams.get("alternative");
-  const selectedOriginalSlug = compareSelection.originalSlug ?? queryOriginalSlug;
-  const selectedAlternativeSlug = compareSelection.alternativeSlug ?? queryAlternativeSlug;
+  const selectedOriginalSlug = queryOriginalSlug ?? compareSelection.originalSlug;
+  const selectedAlternativeSlug = queryAlternativeSlug ?? compareSelection.alternativeSlug;
 
   const original = selectedOriginalSlug ? all.find((product) => product.slug === selectedOriginalSlug) : null;
   const alternative = selectedAlternativeSlug
