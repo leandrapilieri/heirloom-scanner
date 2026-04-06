@@ -2,10 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ComparisonMetric } from "@/components/premium";
 import { premiumSourceProof, premiumSourcePrompt } from "@/lib/premium-copy";
-import { getAlternativeProducts } from "@/lib/services/alternative-engine";
 import { listProducts } from "@/lib/services/product-catalog";
 import { useAppState } from "@/lib/state/app-state";
 import { scoreProduct } from "@/lib/scoring";
@@ -18,8 +17,6 @@ function reasonLabel(original: number, alternative: number, betterWhenLower = tr
 export default function ComparePage() {
   const {
     compareSelection,
-    recentScans,
-    setCompareSelection,
     preferences,
     premium,
     maybeTriggerPremiumPrompt,
@@ -34,28 +31,8 @@ export default function ComparePage() {
   const alternative = compareSelection.alternativeSlug
     ? all.find((product) => product.slug === compareSelection.alternativeSlug && product.slug !== compareSelection.originalSlug)
     : null;
-  const fallbackPair = useMemo(() => {
-    if (original && alternative) return null;
-    const recentProduct = recentScans.map((slug) => all.find((product) => product.slug === slug)).find(Boolean);
-    if (!recentProduct) return null;
-    const suggestedAlternative = getAlternativeProducts(recentProduct, preferences, 1)[0];
-    if (!suggestedAlternative || suggestedAlternative.slug === recentProduct.slug) return null;
-    return {
-      original: recentProduct,
-      alternative: suggestedAlternative
-    };
-  }, [all, alternative, original, preferences, recentScans]);
-  const effectiveOriginal = original ?? fallbackPair?.original ?? null;
-  const effectiveAlternative = alternative ?? fallbackPair?.alternative ?? null;
-
-  useEffect(() => {
-    if (original && alternative) return;
-    if (!fallbackPair) return;
-    setCompareSelection({
-      originalSlug: fallbackPair.original.slug,
-      alternativeSlug: fallbackPair.alternative.slug
-    });
-  }, [alternative, fallbackPair, original, setCompareSelection]);
+  const effectiveOriginal = original;
+  const effectiveAlternative = alternative;
 
   useEffect(() => {
     if (checkedPromptRef.current) return;
@@ -96,7 +73,7 @@ export default function ComparePage() {
       <header className="space-y-2">
         <p className="pill-accent inline-flex">Decision sheet</p>
         <h1 className="display text-3xl leading-tight">Compare for this grocery moment</h1>
-        <p className="text-sm leading-relaxed text-ink/70">Selections persist locally from product pages so comparisons feel stateful.</p>
+        <p className="text-sm leading-relaxed text-ink/70">This page only shows a pair you explicitly started from a product result.</p>
       </header>
 
       <section className="card-hero space-y-4">
