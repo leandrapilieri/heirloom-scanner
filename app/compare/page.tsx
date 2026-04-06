@@ -127,7 +127,7 @@ export default function ComparePage() {
           <p>{premiumSourcePrompt("compare_insights")}</p>
           <p className="text-xs text-ink/60">{premiumSourceProof("compare_insights")}</p>
           <div className="flex gap-2">
-            <Link className="btn-primary text-sm" href="/premium?source=compare_insights">View Premium</Link>
+            <Link className="btn-primary text-sm" href="/premium?source=compare_insights">View premium details</Link>
             <button
               className="btn-secondary text-sm"
               onClick={() => {
@@ -150,7 +150,7 @@ export default function ComparePage() {
             <p className="card-state blur-[1px] text-xs">
               Locked insight: {addedSugarPercent}% lower added sugar and {additiveDelta} fewer flagged additives in this current comparison pair.
             </p>
-            <Link className="btn-secondary text-sm inline-flex" href="/premium?source=compare_insights">Unlock this layer</Link>
+            <Link className="btn-secondary text-sm inline-flex" href="/premium?source=compare_insights">See premium preview options</Link>
           </>
         ) : (
           <p>This deeper analysis is part of premium preview. Core compare remains fully free and active.</p>

@@ -68,9 +68,9 @@ function PremiumPageContent() {
           ))}
         </div>
         <Link className="btn-primary inline-flex justify-center" href="/scan">
-          Continue with Premium
+          Return to scan
         </Link>
-        <p className="text-xs text-ink/60">Mock checkout only in this experiment pass. No billing connection yet.</p>
+        <p className="text-xs text-ink/60">Plans are informational in this MVP. Billing is not connected yet.</p>
         <div className="flex gap-2">
           <button
             className="btn-secondary text-sm"
