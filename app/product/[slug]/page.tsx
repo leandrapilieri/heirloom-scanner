@@ -137,12 +137,12 @@ export default function ProductPage() {
             </div>
           </div>
 
-          <a
+          <Link
             className="btn-primary mt-4 block w-full text-center"
             href={featuredAlternative ? `/product/${featuredAlternative.slug}` : "/scan"}
           >
             {featuredAlternative ? (featuredIsHealthier ? "View healthier option" : "View alternative option") : "Scan another product"}
-          </a>
+          </Link>
 
           <div className="mt-3 flex items-center gap-4 text-xs text-ink/65">
             <button
@@ -197,13 +197,13 @@ export default function ProductPage() {
                   <ReasonChip reason="Better fit for current household preferences" />
                 )}
               </div>
-              <a
+              <Link
                 className="btn-secondary relative z-10 block w-full border-sage/30 bg-white text-center text-sm font-medium shadow-sm"
                 href={`/product/${featuredAlternative.slug}`}
               >
                 {featuredIsHealthier ? "View healthier result" : "View alternative result"}
-              </a>
-              <a
+              </Link>
+              <Link
                 className="btn-secondary block w-full border-sage/30 bg-white text-center text-sm font-medium shadow-sm"
                 href={`/compare?original=${product.slug}&alternative=${featuredAlternative.slug}`}
                 onClick={() => {
@@ -215,7 +215,7 @@ export default function ProductPage() {
                 }}
               >
                 Compare this swap
-              </a>
+              </Link>
             </article>
           ) : (
             <p className="text-sm text-ink/75">No same-family swap is available right now for this product.</p>
@@ -245,7 +245,7 @@ export default function ProductPage() {
             <button className="btn-secondary" onClick={() => toggleShoppingList(product.slug)}>
               {inShoppingList ? "In shopping list" : "Add to list"}
             </button>
-            <a
+            <Link
               className="btn-secondary text-center text-sm"
               href="/scan"
               onClick={() => {
@@ -253,7 +253,7 @@ export default function ProductPage() {
               }}
             >
               Scan another
-            </a>
+            </Link>
           </div>
           <p className="mt-3 text-xs text-ink/60">
             Preference influence: {onboarding.priorityTags.slice(0, 2).join(" · ") || "Household standards applied"}.

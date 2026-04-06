@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const navItems = [
@@ -39,7 +40,7 @@ export function MobileNav() {
         {navItems.map((item) => {
           const isActive = isNavItemActive(pathname, item.href);
           return (
-            <a
+            <Link
               aria-current={isActive ? "page" : undefined}
               className={`rounded-full px-3 py-1.5 text-xs transition ${
                 isActive ? "bg-white text-ink shadow-sm" : "text-ink/65"
@@ -48,7 +49,7 @@ export function MobileNav() {
               key={item.href}
             >
               {item.label}
-            </a>
+            </Link>
           );
         })}
       </nav>
@@ -57,7 +58,7 @@ export function MobileNav() {
           {navItems.map((item) => {
             const isActive = isNavItemActive(pathname, item.href);
             return (
-              <a
+              <Link
                 aria-current={isActive ? "page" : undefined}
                 className={`rounded-full px-3 py-1.5 text-xs transition ${
                   isActive ? "bg-white text-ink shadow-sm" : "text-ink/65 hover:text-ink"
@@ -66,7 +67,7 @@ export function MobileNav() {
                 key={item.href}
               >
                 {item.label}
-              </a>
+              </Link>
             );
           })}
         </div>
