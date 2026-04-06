@@ -75,6 +75,9 @@ export default function ProductPage() {
   const featuredAlternative = alternatives[0];
   const secondaryAlternatives = alternatives.slice(1, 3);
   const featuredAlternativeScore = featuredAlternative ? scoreProduct(featuredAlternative, preferences) : null;
+  const featuredIsHealthier = Boolean(
+    featuredAlternativeScore && featuredAlternativeScore.numericScore > score.numericScore
+  );
   const retailers = getRetailerAvailability(product);
 
   const isFavorite = favorites.includes(product.slug);
@@ -135,7 +138,7 @@ export default function ProductPage() {
             className="btn-primary mt-4 block text-center"
             href={featuredAlternative ? `/product/${featuredAlternative.slug}` : "/scan"}
           >
-            {featuredAlternative ? "View healthier option" : "Scan another product"}
+            {featuredAlternative ? (featuredIsHealthier ? "View healthier option" : "View alternative option") : "Scan another product"}
           </Link>
 
           <div className="mt-3 flex items-center gap-4 text-xs text-ink/65">
@@ -164,7 +167,7 @@ export default function ProductPage() {
       <section className="grid gap-4 xl:grid-cols-[1.05fr_0.95fr] xl:gap-6">
         <section className="space-y-3 rounded-[30px] border border-sage/25 bg-gradient-to-b from-[#eef4ea] to-[#f5f8f2] p-5 shadow-quiet">
           <div className="flex items-end justify-between">
-            <h2 className="display text-2xl">Best healthier swap</h2>
+            <h2 className="display text-2xl">{featuredIsHealthier ? "Best healthier swap" : "Best alternative swap"}</h2>
             <p className="text-xs text-ink/60">Same product family</p>
           </div>
 
@@ -195,7 +198,7 @@ export default function ProductPage() {
                 href={`/product/${featuredAlternative.slug}`}
                 className="btn-secondary block border-sage/30 bg-white text-center text-sm font-medium shadow-sm"
               >
-                View healthier result
+                {featuredIsHealthier ? "View healthier result" : "View alternative result"}
               </Link>
               <Link
                 href="/compare"
@@ -224,7 +227,7 @@ export default function ProductPage() {
                     key={alt.id}
                     product={alt}
                     primaryHref={`/product/${alt.slug}`}
-                    ctaLabel="View healthier result"
+                    ctaLabel={featuredIsHealthier ? "View healthier result" : "View alternative result"}
                     preferences={preferences}
                   />
                 ))}
