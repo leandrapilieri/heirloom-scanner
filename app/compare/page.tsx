@@ -2,8 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { ComparisonMetric } from "@/components/premium";
 import { premiumSourceProof, premiumSourcePrompt } from "@/lib/premium-copy";
 import { listProducts } from "@/lib/services/product-catalog";
@@ -26,6 +26,7 @@ function ComparePageContent() {
     closePremiumPreview
   } = useAppState();
   const all = listProducts();
+  const searchParams = useSearchParams();
   const [showPremiumPrompt, setShowPremiumPrompt] = useState(false);
   const checkedPromptRef = useRef(false);
 
@@ -168,9 +169,18 @@ function ComparePageContent() {
   );
 }
 
+
+function ComparePageFallback() {
+  return (
+    <main className="shell section-gap">
+      <section className="card-state text-sm text-ink/75">Loading comparison…</section>
+    </main>
+  );
+}
+
 export default function ComparePage() {
   return (
-    <Suspense fallback={<main className="shell section-gap"><section className="card-state text-sm text-ink/70">Loading compare…</section></main>}>
+    <Suspense fallback={<ComparePageFallback />}>
       <ComparePageContent />
     </Suspense>
   );
