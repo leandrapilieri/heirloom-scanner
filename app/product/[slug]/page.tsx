@@ -201,7 +201,7 @@ export default function ProductPage() {
                 {featuredIsHealthier ? "View healthier result" : "View alternative result"}
               </Link>
               <Link
-                href="/compare"
+                href={`/compare?original=${product.slug}&alternative=${featuredAlternative.slug}`}
                 className="btn-secondary block border-sage/30 bg-white text-center text-sm font-medium shadow-sm"
                 onClick={() => {
                   setCompareSelection({

@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { ComparisonMetric } from "@/components/premium";
 import { premiumSourceProof, premiumSourcePrompt } from "@/lib/premium-copy";
 import { listProducts } from "@/lib/services/product-catalog";
@@ -14,7 +15,7 @@ function reasonLabel(original: number, alternative: number, betterWhenLower = tr
   return alternative > original ? "Stronger than original" : "Similar to original";
 }
 
-export default function ComparePage() {
+function ComparePageContent() {
   const {
     compareSelection,
     preferences,
@@ -24,12 +25,18 @@ export default function ComparePage() {
     closePremiumPreview
   } = useAppState();
   const all = listProducts();
+  const searchParams = useSearchParams();
   const [showPremiumPrompt, setShowPremiumPrompt] = useState(false);
   const checkedPromptRef = useRef(false);
 
-  const original = compareSelection.originalSlug ? all.find((product) => product.slug === compareSelection.originalSlug) : null;
-  const alternative = compareSelection.alternativeSlug
-    ? all.find((product) => product.slug === compareSelection.alternativeSlug && product.slug !== compareSelection.originalSlug)
+  const queryOriginalSlug = searchParams.get("original");
+  const queryAlternativeSlug = searchParams.get("alternative");
+  const selectedOriginalSlug = compareSelection.originalSlug ?? queryOriginalSlug;
+  const selectedAlternativeSlug = compareSelection.alternativeSlug ?? queryAlternativeSlug;
+
+  const original = selectedOriginalSlug ? all.find((product) => product.slug === selectedOriginalSlug) : null;
+  const alternative = selectedAlternativeSlug
+    ? all.find((product) => product.slug === selectedAlternativeSlug && product.slug !== selectedOriginalSlug)
     : null;
   const effectiveOriginal = original;
   const effectiveAlternative = alternative;
@@ -158,5 +165,22 @@ export default function ComparePage() {
         <button className="text-xs underline" onClick={() => closePremiumPreview()}>Hide premium preview</button>
       </section>
     </main>
+  );
+}
+
+
+function ComparePageFallback() {
+  return (
+    <main className="shell section-gap">
+      <section className="card-state text-sm text-ink/75">Loading comparison…</section>
+    </main>
+  );
+}
+
+export default function ComparePage() {
+  return (
+    <Suspense fallback={<ComparePageFallback />}>
+      <ComparePageContent />
+    </Suspense>
   );
 }
