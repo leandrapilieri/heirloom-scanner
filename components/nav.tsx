@@ -42,7 +42,7 @@ export function MobileNav() {
           return (
             <Link
               aria-current={isActive ? "page" : undefined}
-              className={`rounded-full px-3 py-1.5 text-xs transition ${
+              className={`inline-flex flex-1 items-center justify-center rounded-full px-3 py-1.5 text-xs transition ${
                 isActive ? "bg-white text-ink shadow-sm" : "text-ink/65"
               }`}
               href={item.href}
@@ -60,7 +60,7 @@ export function MobileNav() {
             return (
               <Link
                 aria-current={isActive ? "page" : undefined}
-                className={`rounded-full px-3 py-1.5 text-xs transition ${
+                className={`inline-flex items-center justify-center rounded-full px-3 py-1.5 text-xs transition ${
                   isActive ? "bg-white text-ink shadow-sm" : "text-ink/65 hover:text-ink"
                 }`}
                 href={item.href}
