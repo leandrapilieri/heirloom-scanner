@@ -203,34 +203,100 @@ export default function ScanPage() {
   };
 
   return (
-    <main className="shell section-gap">
-      <header className="space-y-2">
-        <p className="pill-accent inline-flex">Live scan simulator</p>
-        <h1 className="display text-3xl">Scan in aisle, decide with confidence</h1>
-        <p className="text-sm leading-relaxed text-ink/70">A smarter resolver now scores brand, keyword, category, barcode, and ambiguity signals before recommending a match.</p>
-        <div className="flex gap-2 text-xs">
-          <Link className="btn-secondary" href="/">Back home</Link>
-          <Link className="btn-secondary" href="/product/little-orchard-cocoa-creme-minis?sample=1">View sample result</Link>
-        </div>
+    <main className="shell section-gap pb-14">
+      <header className="space-y-3">
+        <p className="pill-accent inline-flex">Guided scan</p>
+        <h1 className="display text-3xl">Scan quickly, choose with clarity</h1>
+        <p className="max-w-[32rem] text-sm leading-relaxed text-ink/70">
+          Point your camera at a snack package and we&apos;ll take you straight to a calm verdict with trusted same-family swaps.
+        </p>
       </header>
 
-      {!cameraAvailable || isDesktopLike ? (
-        <section className="card-state space-y-2 text-sm text-ink/75">
-          <p className="font-medium">No camera? You can still continue right away.</p>
-          <p>Try a sample result, enter a barcode manually, or search by product name to validate flows during desktop testing.</p>
-          <div className="flex flex-wrap gap-2">
-            <Link className="btn-secondary text-xs" href="/product/little-orchard-cocoa-creme-minis?sample=1">Try sample result</Link>
-            <button className="btn-secondary text-xs" onClick={() => manualBarcodeRef.current?.focus()} type="button">Enter barcode manually</button>
-            <button className="btn-secondary text-xs" onClick={() => manualSearchRef.current?.focus()} type="button">Search by product name</button>
+      <section className="card-hero space-y-5 border border-white/80 bg-gradient-to-b from-[#fffaf3] to-[#f7ecdc] p-4 shadow-[0_14px_44px_rgba(36,24,16,0.1)]">
+        <div className="relative overflow-hidden rounded-[26px] border border-white/90 bg-[#f4e6d3] px-4 py-5">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.45),transparent_55%)]" />
+          <div className="absolute right-0 top-0 h-28 w-28 rounded-full bg-accent/10 blur-2xl" />
+          <div className="relative space-y-3">
+            <div className="flex items-center justify-between gap-3 text-xs">
+              <span className="rounded-full bg-white/85 px-3 py-1 text-ink/70">{confidenceLabel}</span>
+              <span className="rounded-full bg-accent/10 px-3 py-1 text-accent">Deterministic scan model</span>
+            </div>
+            <div className="space-y-1">
+              <p className="eyebrow">Scan status</p>
+              <p className="display text-3xl text-ink">{statusMessage}</p>
+            </div>
+            <p className="text-sm text-ink/70">One guided step: scan first, then review the result and swaps.</p>
           </div>
-        </section>
-      ) : null}
+        </div>
+
+        <div className="space-y-2">
+          <button className="btn-primary w-full text-base" onClick={() => runScan({ photoHint: "little orchard cocoa cookie" })} type="button">
+            Scan package now
+          </button>
+          <div className="grid grid-cols-2 gap-2">
+            <button className="btn-secondary text-sm" onClick={() => runScan({ barcode: all[0].barcode })} type="button">
+              Try barcode sample
+            </button>
+            <button className="btn-secondary text-sm" onClick={handleManualRecovery} type="button">
+              Use manual entry
+            </button>
+          </div>
+        </div>
+
+        {showFailureRecovery ? (
+          <div className="rounded-2xl border border-accent/25 bg-[#fff8f5] p-3 text-sm text-ink/80">
+            <p className="font-medium text-ink">We couldn&apos;t confidently identify that package yet.</p>
+            <p className="mt-1">Use manual search for a fast result, or retry with a clearer front-of-pack photo.</p>
+            <div className="mt-3 grid grid-cols-2 gap-2">
+              <button className="btn-primary text-sm" onClick={handleManualRecovery} type="button">Search by name</button>
+              <button className="btn-secondary text-sm" onClick={handleRetry} type="button">Try scan again</button>
+            </div>
+          </div>
+        ) : null}
+
+        {!cameraAvailable || isDesktopLike ? (
+          <div className="rounded-2xl border border-white/80 bg-white/70 p-3 text-sm text-ink/75">
+            <p className="font-medium text-ink">Camera unavailable on this device</p>
+            <p className="mt-1">You can continue with barcode or name entry below.</p>
+          </div>
+        ) : null}
+      </section>
 
       {onboarding.onboardingCompleted && !onboarding.setupSummarySeen ? (
         <section className="card-state space-y-2 text-sm text-ink/75">
           <p className="font-medium">Your setup is active</p>
           <p>Optimizing for {activeSignals.join(" · ")}.</p>
           <button className="text-xs underline" onClick={dismissSetupSummary}>Got it</button>
+        </section>
+      ) : null}
+
+      {revealState ? (
+        <section className="card-hero space-y-2 border-accent/25 text-sm text-ink/75">
+          <p className="eyebrow">Match found</p>
+          <p className="display text-2xl text-ink">Preparing your result</p>
+          <p>
+            {revealState.reason}. Moving to your personalized score and cleaner same-family swaps.
+          </p>
+          {revealState.firstScan ? <p className="text-xs text-ink/60">First real scan milestone unlocked.</p> : null}
+        </section>
+      ) : null}
+
+      {confirmCandidates.length ? (
+        <section className="card-narrative space-y-3">
+          <div>
+            <p className="eyebrow">Confirm match</p>
+            <h2 className="display text-2xl">Choose the right product</h2>
+            <p className="text-sm text-ink/70">We found a few likely matches. Pick one to open the most accurate result.</p>
+          </div>
+          <div className="space-y-2">
+            {confirmCandidates.map((candidate) => (
+              <button className="card-recommendation w-full text-left" key={candidate.slug} onClick={() => confirmCandidate(candidate)} type="button">
+                <p className="eyebrow">{candidate.confidenceTier} confidence</p>
+                <p className="text-sm font-medium">{candidate.name}</p>
+                <p className="text-xs text-ink/65">{candidate.brand} · {Math.round(candidate.confidence * 100)}% · {candidate.reason}</p>
+              </button>
+            ))}
+          </div>
         </section>
       ) : null}
 
@@ -272,53 +338,11 @@ export default function ScanPage() {
         </section>
       ) : null}
 
-      {revealState ? (
-        <section className="card-hero space-y-2 border-accent/25 text-sm text-ink/75">
-          <p className="eyebrow">Match found</p>
-          <p className="display text-2xl text-ink">Preparing your result</p>
-          <p>
-            {revealState.reason}. Moving to your personalized score and cleaner same-family swaps.
-          </p>
-          {revealState.firstScan ? <p className="text-xs text-ink/60">First real scan milestone unlocked.</p> : null}
-        </section>
-      ) : null}
-
-      <section className="card-hero space-y-4">
-        <div className="relative mx-auto h-72 w-full overflow-hidden rounded-[28px] border border-white/80 bg-[#f3e7d6]">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.35),transparent_58%)]" />
-          <div className="absolute inset-6 rounded-[24px] border border-accent/35" />
-          <div className="absolute inset-10 rounded-[18px] border-2 border-dashed border-sage/35" />
-          <div className="absolute left-1/2 top-1/2 w-44 -translate-x-1/2 -translate-y-1/2 text-center">
-            <p className="eyebrow">Smart scan assistant</p>
-            <p className="display text-2xl">{statusMessage}</p>
-          </div>
-          <div className="absolute left-4 top-4 rounded-full bg-white/85 px-3 py-1 text-xs text-ink/75">{confidenceLabel}</div>
-          <div className="absolute bottom-4 right-4 rounded-full bg-accent/10 px-3 py-1 text-xs text-accent">Deterministic match model</div>
-        </div>
-
-        {showFailureRecovery ? (
-          <div className="card-state space-y-2 border-accent/25 bg-[#fff8f5] text-sm text-ink/80">
-            <p className="font-medium text-ink">Need a hand finding the right match?</p>
-            <p>Search manually for the product name to get to a result quickly.</p>
-            <div className="grid grid-cols-2 gap-2">
-              <button className="btn-primary text-sm" onClick={handleManualRecovery} type="button">Search manually</button>
-              <button className="btn-secondary text-sm" onClick={handleRetry} type="button">Try again</button>
-            </div>
-          </div>
-        ) : null}
-
-        <div className="grid grid-cols-3 gap-2 text-center text-xs">
-          <button className="pill" onClick={() => runScan({ barcode: all[0].barcode })} type="button">Barcode</button>
-          <button className="pill" onClick={() => runScan({ photoHint: "little orchard cocoa cookie" })} type="button">Photo capture</button>
-          <button className="pill" onClick={() => runScan({ query: "apple oat bar", categoryHint: "granola bars" })} type="button">Manual search</button>
-        </div>
-      </section>
-
       <section className="card-narrative space-y-3" id="manual-fallback">
         <div>
-          <p className="eyebrow">Manual fallback</p>
-          <h2 className="display text-2xl">Enter barcode or search by name</h2>
-          <p className="text-sm text-ink/70">Use this when camera is unavailable, or when testing scan flows from desktop.</p>
+          <p className="eyebrow">Manual entry</p>
+          <h2 className="display text-2xl">Use barcode or product name</h2>
+          <p className="text-sm text-ink/70">Secondary path when camera scan is unavailable or not clear.</p>
         </div>
         <div className="space-y-2">
           <input
@@ -329,7 +353,7 @@ export default function ScanPage() {
             onChange={(event) => setManualBarcode(event.target.value)}
           />
           <button className="btn-secondary w-full text-sm" onClick={() => runScan({ barcode: manualBarcode.trim() })} type="button">
-            Enter barcode manually
+            Enter barcode
           </button>
           <input
             ref={manualSearchRef}
@@ -349,13 +373,13 @@ export default function ScanPage() {
             onClick={() => runScan({ query: manualQuery.trim(), categoryHint: manualCategoryHint.trim() || undefined })}
             type="button"
           >
-            Search by product name
+            Search by name
           </button>
         </div>
       </section>
 
       <section className="card-state text-sm text-ink/75">
-        <p className="font-medium">Pipeline stages</p>
+        <p className="font-medium">How scanning works</p>
         <div className="mt-2 flex flex-wrap gap-2">
           {pipelineStages.map((stage) => (
             <span className="pill" key={stage}>{stage}</span>
@@ -363,27 +387,11 @@ export default function ScanPage() {
         </div>
       </section>
 
-      {confirmCandidates.length ? (
-        <section className="card-narrative space-y-3">
-          <div>
-            <p className="eyebrow">Smart assist</p>
-            <h2 className="display text-2xl">Confirm the product</h2>
-            <p className="text-sm text-ink/70">We found a few likely matches. Choose one to get the most accurate score.</p>
-          </div>
-          <div className="space-y-2">
-            {confirmCandidates.map((candidate) => (
-              <button className="card-recommendation w-full text-left" key={candidate.slug} onClick={() => confirmCandidate(candidate)} type="button">
-                <p className="eyebrow">{candidate.confidenceTier} confidence</p>
-                <p className="text-sm font-medium">{candidate.name}</p>
-                <p className="text-xs text-ink/65">{candidate.brand} · {Math.round(candidate.confidence * 100)}% · {candidate.reason}</p>
-              </button>
-            ))}
-          </div>
-        </section>
-      ) : null}
-
-      <section className="section-gap">
-        <h2 className="display text-2xl">Recent scans</h2>
+      <section className="space-y-2">
+        <div className="flex items-center justify-between">
+          <h2 className="display text-2xl">Recent scans</h2>
+          <Link className="text-xs text-ink/60 underline" href="/">Back home</Link>
+        </div>
         <div className="grid gap-2">
           {(recent.length ? recent : all.slice(0, 3)).slice(0, 5).map((product) => (
             <Link key={product.id} href={`/product/${product.slug}`} className="card-recommendation block text-sm">
