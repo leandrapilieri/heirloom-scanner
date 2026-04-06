@@ -1,6 +1,7 @@
 "use client";
 
 import { PreferenceToggle } from "@/components/premium";
+import { useRouter } from "next/navigation";
 import { useAppState } from "@/lib/state/app-state";
 
 const labels: Record<string, { title: string; description: string }> = {
@@ -23,6 +24,7 @@ const sections = [
 ] as const;
 
 export default function PreferencesPage() {
+  const router = useRouter();
   const { preferences, setPreference, hydrated, resetOnboarding } = useAppState();
 
   return (
@@ -46,7 +48,15 @@ export default function PreferencesPage() {
       <section className="card-state text-sm text-ink/75">
         <p className="font-medium">First-session setup</p>
         <p className="mt-1">Need to revisit your guided setup? You can rerun onboarding any time.</p>
-        <button className="btn-secondary mt-3" onClick={resetOnboarding}>Rerun guided setup</button>
+        <button
+          className="btn-secondary mt-3"
+          onClick={() => {
+            resetOnboarding();
+            router.push("/");
+          }}
+        >
+          Rerun guided setup
+        </button>
       </section>
 
       {sections.map((section) => (
