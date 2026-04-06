@@ -2,6 +2,7 @@
 
 import { PreferenceToggle } from "@/components/premium";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useAppState } from "@/lib/state/app-state";
 
 const labels: Record<string, { title: string; description: string }> = {
@@ -25,7 +26,14 @@ const sections = [
 
 export default function PreferencesPage() {
   const router = useRouter();
-  const { preferences, setPreference, hydrated, resetOnboarding } = useAppState();
+  const { preferences, setPreference, hydrated, resetOnboarding, onboarding } = useAppState();
+  const [isRerunningSetup, setIsRerunningSetup] = useState(false);
+
+  useEffect(() => {
+    if (!isRerunningSetup) return;
+    if (onboarding.onboardingCompleted) return;
+    router.push("/");
+  }, [isRerunningSetup, onboarding.onboardingCompleted, router]);
 
   return (
     <main className="shell section-gap">
@@ -49,10 +57,11 @@ export default function PreferencesPage() {
         <p className="font-medium">First-session setup</p>
         <p className="mt-1">Need to revisit your guided setup? You can rerun onboarding any time.</p>
         <button
+          type="button"
           className="btn-secondary mt-3"
           onClick={() => {
+            setIsRerunningSetup(true);
             resetOnboarding();
-            router.push("/");
           }}
         >
           Rerun guided setup

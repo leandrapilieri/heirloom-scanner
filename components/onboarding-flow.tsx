@@ -44,7 +44,7 @@ export function OnboardingFlow() {
         <div className="space-y-3">
           <h2 className="display text-3xl">Scan with confidence in aisle</h2>
           <p className="text-sm text-ink/75">Heirloom helps you decide faster with clear grades, calm explanations, and cleaner same-family swaps.</p>
-          <button className="btn-primary" onClick={next}>Begin setup</button>
+          <button type="button" className="btn-primary" onClick={next}>Begin setup</button>
         </div>
       ) : null}
 
@@ -60,7 +60,9 @@ export function OnboardingFlow() {
               ["speed", "Decision speed"]
             ].map(([key, label]) => (
               <button
+                type="button"
                 key={key}
+                aria-pressed={onboarding.onboardingPrimaryConcern === key}
                 className={`card-metric text-left text-sm ${onboarding.onboardingPrimaryConcern === key ? "border-sage/40" : ""}`}
                 onClick={() => setOnboardingConcern(key as typeof onboarding.onboardingPrimaryConcern)}
               >
@@ -69,8 +71,8 @@ export function OnboardingFlow() {
             ))}
           </div>
           <div className="flex gap-2">
-            <button className="btn-secondary" onClick={back}>Back</button>
-            <button className="btn-primary" onClick={next}>Continue</button>
+            <button type="button" className="btn-secondary" onClick={back}>Back</button>
+            <button type="button" className="btn-primary" onClick={next}>Continue</button>
           </div>
         </div>
       ) : null}
@@ -82,7 +84,9 @@ export function OnboardingFlow() {
           <div className="grid gap-2">
             {standards.map(([key, label]) => (
               <button
+                type="button"
                 key={key}
+                aria-pressed={preferences[key]}
                 className={`card-metric flex items-center justify-between text-sm ${preferences[key] ? "border-sage/40" : ""}`}
                 onClick={() => setPreference(key, !preferences[key])}
               >
@@ -92,8 +96,8 @@ export function OnboardingFlow() {
             ))}
           </div>
           <div className="flex gap-2">
-            <button className="btn-secondary" onClick={back}>Back</button>
-            <button className="btn-primary" onClick={next}>Continue</button>
+            <button type="button" className="btn-secondary" onClick={back}>Back</button>
+            <button type="button" className="btn-primary" onClick={next}>Continue</button>
           </div>
         </div>
       ) : null}
@@ -106,15 +110,21 @@ export function OnboardingFlow() {
             {priorities.map((priority) => {
               const active = onboarding.priorityTags.includes(priority);
               return (
-                <button key={priority} className={`pill ${active ? "bg-sage/20 border-sage/30" : ""}`} onClick={() => togglePriorityTag(priority)}>
+                <button
+                  type="button"
+                  key={priority}
+                  aria-pressed={active}
+                  className={`pill ${active ? "bg-sage/20 border-sage/30" : ""}`}
+                  onClick={() => togglePriorityTag(priority)}
+                >
                   {priority}
                 </button>
               );
             })}
           </div>
           <div className="flex gap-2">
-            <button className="btn-secondary" onClick={back}>Back</button>
-            <button className="btn-primary" onClick={next}>Continue</button>
+            <button type="button" className="btn-secondary" onClick={back}>Back</button>
+            <button type="button" className="btn-primary" onClick={next}>Continue</button>
           </div>
         </div>
       ) : null}
@@ -129,8 +139,8 @@ export function OnboardingFlow() {
             <p className="text-sm text-ink/75">We suggest same-family swaps that better match your household standards.</p>
           </div>
           <div className="flex gap-2">
-            <button className="btn-secondary" onClick={back}>Back</button>
-            <button className="btn-primary" onClick={() => { markResultEducationSeen(); next(); }}>Continue</button>
+            <button type="button" className="btn-secondary" onClick={back}>Back</button>
+            <button type="button" className="btn-primary" onClick={() => { markResultEducationSeen(); next(); }}>Continue</button>
           </div>
         </div>
       ) : null}
@@ -141,6 +151,7 @@ export function OnboardingFlow() {
           <p className="text-sm text-ink/75">Your standards are active. You can scan by barcode, package photo, or manual search on the next screen.</p>
           <div className="grid grid-cols-2 gap-2">
             <button
+              type="button"
               className="btn-primary"
               onClick={() => {
                 completeOnboarding();
@@ -150,6 +161,7 @@ export function OnboardingFlow() {
               Go to scan
             </button>
             <button
+              type="button"
               className="btn-secondary"
               onClick={() => {
                 completeOnboarding();

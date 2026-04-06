@@ -26,7 +26,6 @@ function ComparePageContent() {
     closePremiumPreview
   } = useAppState();
   const all = listProducts();
-  const searchParams = useSearchParams();
   const [showPremiumPrompt, setShowPremiumPrompt] = useState(false);
   const checkedPromptRef = useRef(false);
 
