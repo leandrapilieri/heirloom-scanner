@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ScanCandidate, resolveScan } from "@/lib/services/scan-resolver";
 import { CatalogProduct, listProducts } from "@/lib/services/product-catalog";
+import { getAlternativeProducts } from "@/lib/services/alternative-engine";
 import { ScanOutcome, useAppState } from "@/lib/state/app-state";
 
 const pipelineStages = ["Identify package", "Check packaging signals", "Rank likely matches", "Prepare alternatives"];
@@ -19,7 +20,9 @@ export default function ScanPage() {
     onboarding,
     preferences,
     dismissSetupSummary,
-    markFirstScanCompleted
+    markFirstScanCompleted,
+    toggleFavorite,
+    setCompareSelection
   } = useAppState();
 
   const all = listProducts();
@@ -35,6 +38,7 @@ export default function ScanPage() {
   const [manualCategoryHint, setManualCategoryHint] = useState("");
   const [isDesktopLike, setIsDesktopLike] = useState(false);
   const [cameraAvailable, setCameraAvailable] = useState(false);
+  const [latestResolvedSlug, setLatestResolvedSlug] = useState<string | null>(null);
   const [revealState, setRevealState] = useState<{
     slug: string;
     confidenceTier: ScanOutcome["confidenceTier"];
@@ -88,6 +92,7 @@ export default function ScanPage() {
     if (latestAttemptIdRef.current !== attemptId) return;
     const firstScan = !onboarding.firstScanCompleted;
     completeFirstScanIfNeeded();
+    setLatestResolvedSlug(slug);
     setRevealState({ slug, confidenceTier, reason, firstScan });
     setStatusMessage("Match found");
     setConfidenceLabel(`${confidenceTier} confidence`);
@@ -182,6 +187,8 @@ export default function ScanPage() {
   };
 
   const showFailureRecovery = statusMessage === "No clear match found";
+  const latestResolvedProduct = latestResolvedSlug ? all.find((product) => product.slug === latestResolvedSlug) : null;
+  const latestResolvedSwap = latestResolvedProduct ? getAlternativeProducts(latestResolvedProduct, preferences)[0] : null;
 
   const handleManualRecovery = () => {
     manualSearchRef.current?.focus();
@@ -232,9 +239,35 @@ export default function ScanPage() {
           <p className="font-medium">First scan complete</p>
           <p>Your result now reflects your household standards. We&apos;ll keep favoring cleaner same-family swaps.</p>
           <div className="flex gap-2">
-            <Link className="btn-secondary text-xs" href="/favorites">Save picks</Link>
-            <Link className="btn-secondary text-xs" href="/compare">Compare options</Link>
-            <button className="btn-secondary text-xs" onClick={() => setShowFirstSuccess(false)}>Scan another</button>
+            <button
+              className="btn-secondary text-xs"
+              onClick={() => {
+                if (!latestResolvedSlug) return;
+                toggleFavorite(latestResolvedSlug);
+                setShowFirstSuccess(false);
+                router.push("/favorites");
+              }}
+              type="button"
+            >
+              Save pick
+            </button>
+            <button
+              className="btn-secondary text-xs disabled:cursor-not-allowed disabled:opacity-60"
+              onClick={() => {
+                if (!latestResolvedSlug || !latestResolvedSwap) return;
+                setCompareSelection({
+                  originalSlug: latestResolvedSlug,
+                  alternativeSlug: latestResolvedSwap.slug
+                });
+                setShowFirstSuccess(false);
+                router.push("/compare");
+              }}
+              disabled={!latestResolvedSlug || !latestResolvedSwap}
+              type="button"
+            >
+              Compare pick
+            </button>
+            <button className="btn-secondary text-xs" onClick={() => setShowFirstSuccess(false)} type="button">Scan another</button>
           </div>
         </section>
       ) : null}
