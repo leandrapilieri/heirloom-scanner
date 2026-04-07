@@ -117,6 +117,7 @@ export default function ReportPage() {
                 dismissPremiumPrompt();
                 setShowPremiumPrompt(false);
               }}
+              type="button"
             >
               Not now
             </button>
@@ -141,7 +142,7 @@ export default function ReportPage() {
         ) : (
           <div className="space-y-2 text-sm text-ink/70">
             <p className="card-state">This deeper layer is reserved for premium preview.</p>
-            <button className="text-xs underline" onClick={() => closePremiumPreview()}>Keep core report view</button>
+            <button className="text-xs underline" onClick={() => closePremiumPreview()} type="button">Keep core report view</button>
           </div>
         )}
       </InterpretationCard>

@@ -78,6 +78,7 @@ function PremiumPageContent() {
               dismissPremiumPrompt();
               closePremiumPreview();
             }}
+            type="button"
           >
             Not now
           </button>
