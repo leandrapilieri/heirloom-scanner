@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -255,9 +256,11 @@ export default function ScanPage() {
         </div>
 
         {revealState && latestResolvedProduct ? (
-          <div className="absolute inset-x-4 bottom-4 rounded-[26px] border border-white/80 bg-[#fffaf3] p-4 text-ink shadow-[0_18px_48px_rgba(26,15,9,0.24)]">
+          <div className="absolute inset-x-4 bottom-4 z-30 rounded-[26px] border border-white/80 bg-[#fffaf3] p-4 text-ink shadow-[0_18px_48px_rgba(26,15,9,0.24)]">
             <div className="flex items-start gap-3">
-              <img alt={latestResolvedProduct.name} className="h-14 w-14 rounded-2xl border border-ink/10 bg-white/70 object-cover" src={latestResolvedProduct.image} />
+              <div className="relative h-14 w-14 overflow-hidden rounded-2xl border border-ink/10 bg-white/70">
+                <Image alt={latestResolvedProduct.name} className="object-cover" fill sizes="56px" src={latestResolvedProduct.image} />
+              </div>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium text-ink">{latestResolvedProduct.name}</p>
                 <p className="text-xs text-ink/65">{latestResolvedProduct.grade} · {Math.round(latestResolvedProduct.numericScore)}</p>
@@ -270,7 +273,7 @@ export default function ScanPage() {
               ))}
             </ul>
             <div className="mt-3 grid grid-cols-2 gap-2">
-              <button className="btn-primary text-sm" onClick={openResolvedProduct} type="button">View full result</button>
+              <button className="btn-primary relative z-40 text-sm" onClick={openResolvedProduct} type="button">View full result</button>
               <button className="btn-secondary text-sm" onClick={handleRetry} type="button">Scan again</button>
             </div>
           </div>
@@ -347,7 +350,7 @@ export default function ScanPage() {
                   alternativeSlug: latestResolvedSwap.slug
                 });
                 setShowFirstSuccess(false);
-                router.push("/compare");
+                router.push(`/compare?original=${latestResolvedSlug}&alternative=${latestResolvedSwap.slug}`);
               }}
               disabled={!latestResolvedSlug || !latestResolvedSwap}
               type="button"
