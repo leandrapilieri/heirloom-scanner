@@ -233,7 +233,7 @@ export default function ScanPage() {
   };
 
   return (
-    <main className="shell section-gap pb-14">
+    <main className="shell section-gap">
       <section className="relative min-h-[74vh] overflow-hidden rounded-[34px] border border-white/75 bg-[#201710] p-4 shadow-[0_18px_50px_rgba(26,15,9,0.35)]">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(255,243,224,0.24),transparent_45%)]" />
         <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(14,10,6,0.66),rgba(14,10,6,0.5))]" />
