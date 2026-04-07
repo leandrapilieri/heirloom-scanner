@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { ReasonChip, RecommendationModule, RetailerRow, SeverityChip } from "@/components/premium";
 import { premiumSourceProof } from "@/lib/premium-copy";
 import { getAlternativeProducts } from "@/lib/services/alternative-engine";
