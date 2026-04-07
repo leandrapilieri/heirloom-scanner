@@ -6,13 +6,23 @@ import { CatalogProduct, listProducts } from "@/lib/services/product-catalog";
 import { useAppState } from "@/lib/state/app-state";
 
 export default function FavoritesPage() {
-  const { favorites, recentScans, shoppingList } = useAppState();
+  const { favorites, recentScans, shoppingList, hydrated } = useAppState();
   const all = listProducts();
 
   const favoriteProducts = favorites.map((slug) => all.find((product) => product.slug === slug)).filter((product): product is CatalogProduct => Boolean(product));
   const recentProducts = recentScans.map((slug) => all.find((product) => product.slug === slug)).filter((product): product is CatalogProduct => Boolean(product));
   const hasFavorites = favoriteProducts.length > 0;
   const hasRecentScans = recentProducts.length > 0;
+
+  if (!hydrated) {
+    return (
+      <main className="shell section-gap">
+        <div className="card-state space-y-3 text-sm text-ink/75">
+          <p className="font-medium text-ink">Loading your pantry...</p>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="shell section-gap">
