@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useMemo } from "react";
+import { createContext, useContext } from "react";
 import { PREMIUM_PROMPT_COOLDOWN_MS, PremiumTriggerSource } from "@/lib/premium-access";
 import { defaultPreferences } from "@/lib/preferences";
 import { storageKeys } from "@/lib/storage";
@@ -121,8 +121,15 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     onboardingState.hydrated &&
     premiumState.hydrated;
 
-  const value = useMemo<AppStateContextValue>(
-    () => ({
+  const addRecentScan = (slug: string) => {
+    recentState.setState((prev) => [slug, ...prev.filter((item) => item !== slug)].slice(0, 12));
+  };
+
+  const markSampleResultViewed = () => {
+    onboardingState.setState((prev) => ({ ...prev, sampleResultViewed: true }));
+  };
+
+  const value: AppStateContextValue = {
       hydrated,
       preferences: prefState.state,
       setPreference: (key, enabled) => {
@@ -137,9 +144,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         shoppingState.setState((prev) => (prev.includes(slug) ? prev.filter((item) => item !== slug) : [slug, ...prev]));
       },
       recentScans: recentState.state,
-      addRecentScan: (slug) => {
-        recentState.setState((prev) => [slug, ...prev.filter((item) => item !== slug)].slice(0, 12));
-      },
+      addRecentScan,
       compareSelection: compareState.state,
       setCompareSelection: (selection) => compareState.setState(selection),
       scanOutcomes: scanOutcomeState.state,
@@ -165,9 +170,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       markResultEducationSeen: () => {
         onboardingState.setState((prev) => ({ ...prev, resultEducationSeen: true }));
       },
-      markSampleResultViewed: () => {
-        onboardingState.setState((prev) => ({ ...prev, sampleResultViewed: true }));
-      },
+      markSampleResultViewed,
       markFirstScanCompleted: () => {
         onboardingState.setState((prev) => ({ ...prev, firstScanCompleted: true }));
       },
@@ -237,27 +240,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       resetOnboarding: () => {
         onboardingState.setState(onboardingDefaults);
       }
-    }),
-    [
-      hydrated,
-      prefState.state,
-      prefState.setState,
-      favoriteState.state,
-      favoriteState.setState,
-      shoppingState.state,
-      shoppingState.setState,
-      recentState.state,
-      recentState.setState,
-      compareState.state,
-      compareState.setState,
-      scanOutcomeState.state,
-      scanOutcomeState.setState,
-      onboardingState.state,
-      onboardingState.setState,
-      premiumState.state,
-      premiumState.setState
-    ]
-  );
+    };
 
   return <AppStateContext.Provider value={value}>{children}</AppStateContext.Provider>;
 }

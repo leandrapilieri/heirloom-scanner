@@ -152,6 +152,7 @@ export default function ProductPage() {
                 addRecentScan(product.slug);
                 markFirstMeaningfulInteraction("save");
               }}
+              type="button"
             >
               {isFavorite ? "Saved" : "Save"}
             </button>
@@ -242,7 +243,7 @@ export default function ProductPage() {
         <section className="rounded-[30px] border border-accent/15 bg-[#fff9f6] p-4 text-sm text-ink/70">
           <p className="text-[11px] uppercase tracking-[0.12em] text-ink/50">Quick actions</p>
           <div className="mt-3 grid grid-cols-2 gap-2">
-            <button className="btn-secondary" onClick={() => toggleShoppingList(product.slug)}>
+            <button className="btn-secondary" onClick={() => toggleShoppingList(product.slug)} type="button">
               {inShoppingList ? "In shopping list" : "Add to list"}
             </button>
             <Link
