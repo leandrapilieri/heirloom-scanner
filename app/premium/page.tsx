@@ -29,7 +29,7 @@ function PremiumPageContent() {
   const sourceLabel = premiumSourceLabel(source);
 
   return (
-    <main className="shell section-gap pb-24">
+    <main className="shell section-gap ">
       <header className="card-hero space-y-3">
         <p className="pill-accent inline-flex">Heirloom Premium</p>
         <h1 className="display text-3xl leading-tight">
@@ -92,7 +92,7 @@ function PremiumPageContent() {
 
 export default function PremiumPage() {
   return (
-    <Suspense fallback={<main className="shell section-gap pb-24"><section className="card-state text-sm text-ink/70">Loading premium details…</section></main>}>
+    <Suspense fallback={<main className="shell section-gap "><section className="card-state text-sm text-ink/70">Loading premium details…</section></main>}>
       <PremiumPageContent />
     </Suspense>
   );

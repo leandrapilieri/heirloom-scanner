@@ -36,13 +36,13 @@ export function MobileNav() {
 
   return (
     <>
-      <nav className="fixed inset-x-0 bottom-3 z-50 mx-auto flex w-[calc(100%-1rem)] max-w-md items-center justify-between rounded-full border border-white/80 bg-[#f8f4ec]/95 px-3 py-2 shadow-halo backdrop-blur md:hidden">
+      <nav className="fixed inset-x-0 bottom-3 z-50 mx-auto flex w-[calc(100%-1rem)] max-w-md items-center justify-between rounded-full border border-white/80 bg-[#f8f4ec]/95 px-3 py-2 shadow-halo backdrop-blur md:hidden pointer-events-none">
         {navItems.map((item) => {
           const isActive = isNavItemActive(pathname, item.href);
           return (
             <Link
               aria-current={isActive ? "page" : undefined}
-              className={`inline-flex flex-1 items-center justify-center rounded-full px-3 py-1.5 text-xs transition ${
+              className={`inline-flex flex-1 items-center justify-center rounded-full px-3 py-1.5 text-xs transition pointer-events-auto ${
                 isActive ? "bg-white text-ink shadow-sm" : "text-ink/65"
               }`}
               href={item.href}
