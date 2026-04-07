@@ -39,10 +39,13 @@ export default function ProductPage() {
   } = useAppState();
 
   const product = getProductBySlug(slug);
+  const lastTrackedRecentScanSlugRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!product) return;
+    if (lastTrackedRecentScanSlugRef.current === product.slug) return;
     addRecentScan(product.slug);
+    lastTrackedRecentScanSlugRef.current = product.slug;
   }, [addRecentScan, product]);
 
   useEffect(() => {
