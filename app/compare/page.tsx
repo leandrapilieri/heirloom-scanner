@@ -18,7 +18,6 @@ function reasonLabel(original: number, alternative: number, betterWhenLower = tr
 function ComparePageContent() {
   const searchParams = useSearchParams();
   const {
-    compareSelection,
     preferences,
     premium,
     maybeTriggerPremiumPrompt,
@@ -31,8 +30,10 @@ function ComparePageContent() {
 
   const queryOriginalSlug = searchParams.get("original");
   const queryAlternativeSlug = searchParams.get("alternative");
-  const selectedOriginalSlug = queryOriginalSlug ?? compareSelection.originalSlug;
-  const selectedAlternativeSlug = queryAlternativeSlug ?? compareSelection.alternativeSlug;
+  // Only use persisted state if fresh intent (URL params) is provided
+  // Otherwise, require explicit selection from a product result page
+  const selectedOriginalSlug = queryOriginalSlug || null;
+  const selectedAlternativeSlug = queryAlternativeSlug || null;
 
   const original = selectedOriginalSlug ? all.find((product) => product.slug === selectedOriginalSlug) : null;
   const alternative = selectedAlternativeSlug
