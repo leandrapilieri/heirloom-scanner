@@ -2,8 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useParams, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useRef } from "react";
 import { ReasonChip, RecommendationModule, RetailerRow, SeverityChip } from "@/components/premium";
 import { premiumSourceProof } from "@/lib/premium-copy";
 import { getAlternativeProducts } from "@/lib/services/alternative-engine";
@@ -14,6 +14,7 @@ import { scoreProduct } from "@/lib/scoring";
 
 export default function ProductPage() {
   const params = useParams<{ slug: string }>();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const slug = params.slug;
   const sampleMode = searchParams.get("sample") === "1";
@@ -203,19 +204,20 @@ export default function ProductPage() {
               >
                 {featuredIsHealthier ? "View healthier result" : "View alternative result"}
               </Link>
-              <Link
+              <button
                 className="btn-secondary block w-full border-sage/30 bg-white text-center text-sm font-medium shadow-sm"
-                href={`/compare?original=${product.slug}&alternative=${featuredAlternative.slug}`}
                 onClick={() => {
                   setCompareSelection({
                     originalSlug: product.slug,
                     alternativeSlug: featuredAlternative.slug
                   });
                   markFirstMeaningfulInteraction("compare");
+                  router.push(`/compare?original=${product.slug}&alternative=${featuredAlternative.slug}`);
                 }}
+                type="button"
               >
                 Compare this swap
-              </Link>
+              </button>
             </article>
           ) : (
             <p className="text-sm text-ink/75">No same-family swap is available right now for this product.</p>
@@ -245,15 +247,16 @@ export default function ProductPage() {
             <button className="btn-secondary" onClick={() => toggleShoppingList(product.slug)}>
               {inShoppingList ? "In shopping list" : "Add to list"}
             </button>
-            <Link
+            <button
               className="btn-secondary text-center text-sm"
-              href="/scan"
               onClick={() => {
                 trackResultContextScan();
+                router.push("/scan");
               }}
+              type="button"
             >
               Scan another
-            </Link>
+            </button>
           </div>
           <p className="mt-3 text-xs text-ink/60">
             Preference influence: {onboarding.priorityTags.slice(0, 2).join(" · ") || "Household standards applied"}.
