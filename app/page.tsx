@@ -1,106 +1,76 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
+import { OnboardingFlow } from "@/components/onboarding-flow";
+import { ProductCard } from "@/components/product-card";
 import { listProducts } from "@/lib/services/product-catalog";
+import { useAppState } from "@/lib/state/app-state";
 
-export default function HomePage() {
-  const products = listProducts().slice(0, 6);
+const TRUST_POINTS = [
+  "Scan barcode or package",
+  "See grade and top reasons",
+  "Find cleaner same-family swaps",
+];
+
+export default function LandingPage() {
+  const highlights = listProducts().slice(0, 3);
+  const { onboarding, hydrated } = useAppState();
 
   return (
-    <main className="shell section-gap pb-32">
-      {/* Header Section */}
-      <section className="flex items-start justify-between pt-4">
-        <div>
-          <p className="text-sm text-ink-light">Good afternoon</p>
-          <h1 className="display text-3xl font-bold text-ink">Leandra Pilieri</h1>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1 rounded-full bg-white/70 backdrop-blur-xs px-3 py-2 shadow-soft">
-            <span className="text-lg">🔥</span>
-            <span className="text-sm font-semibold text-ink">0</span>
-          </div>
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-accent/30 to-accent-warm/30 flex items-center justify-center text-2xl">
-            🍐
-          </div>
-        </div>
-      </section>
+    <main className="shell section-gap">
+      <section className="relative overflow-hidden rounded-[2rem] border border-ink/10 bg-gradient-to-b from-[#fffaf2] via-[#fff6eb] to-[#f6f0e6] px-5 pb-6 pt-6 shadow-[0_16px_50px_-28px_rgba(41,31,22,0.45)]">
+        <div className="pointer-events-none absolute -right-8 -top-8 h-36 w-36 rounded-full bg-[#e46f4e]/20 blur-2xl" />
+        <div className="pointer-events-none absolute -bottom-10 left-0 h-28 w-28 rounded-full bg-[#9caf88]/20 blur-2xl" />
 
-      {/* Current Rank Card */}
-      <section className="rounded-[28px] bg-gradient-to-br from-accent to-accent/80 p-6 text-white shadow-premium">
-        <p className="text-xs font-bold uppercase tracking-widest opacity-90">Current Rank</p>
-        <h2 className="display text-3xl font-bold mt-2">Heirloom Guardian</h2>
-        
-        <div className="mt-6 flex items-center justify-between">
-          <div>
-            <p className="text-sm opacity-90">0 Scans</p>
-            <div className="mt-3 w-40 h-2 rounded-full bg-white/30">
-              <div className="h-full w-0 rounded-full bg-white transition-all" />
-            </div>
-          </div>
-          <div className="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center bg-accent/50 text-3xl">
-            🛡️
-          </div>
+        <p className="pill-accent inline-flex">Trusted grocery guidance for caregivers</p>
+
+        <div className="mt-4 space-y-3">
+          <h1 className="display text-[2rem] leading-[1.08] tracking-tight text-ink">
+            Find the best snack choice in seconds.
+          </h1>
+          <p className="max-w-[34ch] text-sm leading-relaxed text-ink/75">
+            Scan once to get a clear health grade, calm ingredient guidance, and healthier alternatives in the same snack family.
+          </p>
         </div>
-        
-        <p className="text-xs mt-4 opacity-90">Next: Wellness Expert</p>
-      </section>
 
-      {/* Heirloom Score Section */}
-      <section className="card-narrative">
-        <p className="text-xs font-bold uppercase tracking-widest text-ink-light">Heirloom Score</p>
-        <p className="text-sm text-ink-light mt-2">Add a product to your pantry to start</p>
-      </section>
-
-      {/* Lab Tested Products Section */}
-      <section className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h3 className="display text-2xl font-bold text-ink">Lab Tested Products</h3>
-          <Link href="/search" className="text-sm font-medium text-accent hover:text-accent/80">
-            See all →
+        <div className="mt-5 flex flex-col gap-3">
+          <Link href="/scan" className="btn-primary w-full justify-center text-base">
+            Scan a snack
+          </Link>
+          <Link href="#how-it-works" className="btn-secondary w-full justify-center">
+            How it works
           </Link>
         </div>
-        <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4">
-          {products.slice(0, 3).map((product) => (
-            <Link
-              key={product.id}
-              href={`/product/${product.slug}`}
-              className="flex-shrink-0 w-40 space-y-2"
-            >
-              <div className="relative h-40 rounded-[20px] overflow-hidden bg-stone/30 shadow-soft">
-                <Image
-                  src={product.image}
-                  alt={product.name}
-                  fill
-                  className="object-cover"
-                />
-                <div className="absolute bottom-3 left-3 w-5 h-5 rounded-full bg-accent shadow-soft" />
-              </div>
-              <div>
-                <p className="text-sm font-bold text-ink line-clamp-2">{product.name}</p>
-                <p className="text-xs text-ink-light">{product.brand}</p>
-              </div>
-            </Link>
+
+        <ul className="mt-5 grid gap-2 rounded-2xl border border-ink/10 bg-ivory/70 p-3 text-sm text-ink/75">
+          {TRUST_POINTS.map((point, index) => (
+            <li key={point} className="flex items-center gap-2">
+              <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-ink/8 text-xs font-semibold text-ink/70">
+                {index + 1}
+              </span>
+              <span>{point}</span>
+            </li>
           ))}
-        </div>
+        </ul>
       </section>
 
-      {/* Latest Articles Section */}
-      <section className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h3 className="display text-2xl font-bold text-ink">Latest Articles</h3>
-          <Link href="/search" className="text-sm font-medium text-accent hover:text-accent/80">
-            See all →
-          </Link>
+      {hydrated && !onboarding.onboardingCompleted ? <OnboardingFlow /> : null}
+
+      <section id="how-it-works" className="space-y-2 rounded-3xl border border-ink/10 bg-card px-5 py-5 shadow-sm">
+        <h2 className="display text-2xl">How it works</h2>
+        <p className="text-sm leading-relaxed text-ink/75">
+          Use your camera to identify a snack, then get an easy-to-read verdict with the key reasons and practical swap ideas.
+        </p>
+      </section>
+
+      <section id="browse-examples" className="space-y-3 pb-2">
+        <div className="space-y-1">
+          <h2 className="display text-2xl">Editor&apos;s examples</h2>
+          <p className="text-sm text-ink/70">Browse a few common snacks and preview the style of result you&apos;ll get after scanning.</p>
         </div>
-        <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4">
-          {[1, 2].map((i) => (
-            <div
-              key={i}
-              className="flex-shrink-0 w-48 h-32 rounded-[20px] overflow-hidden bg-gradient-to-br from-stone to-accent/20 shadow-soft"
-            />
-          ))}
-        </div>
+        {highlights.map((product) => (
+          <ProductCard key={product.id} product={product} />
+        ))}
       </section>
     </main>
   );
