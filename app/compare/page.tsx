@@ -142,6 +142,7 @@ function ComparePageContent() {
                 dismissPremiumPrompt();
                 setShowPremiumPrompt(false);
               }}
+              type="button"
             >
               Not now
             </button>
@@ -163,7 +164,7 @@ function ComparePageContent() {
         ) : (
           <p>This deeper analysis is part of premium preview. Core compare remains fully free and active.</p>
         )}
-        <button className="text-xs underline" onClick={() => closePremiumPreview()}>Hide premium preview</button>
+        <button className="text-xs underline" onClick={() => closePremiumPreview()} type="button">Hide premium preview</button>
       </section>
     </main>
   );
