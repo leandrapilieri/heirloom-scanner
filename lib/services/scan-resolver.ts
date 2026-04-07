@@ -49,15 +49,6 @@ interface ScanInput {
   categoryHint?: string;
 }
 
-function dedupeCandidates(candidates: ScanCandidate[]) {
-  const seen = new Set<string>();
-  return candidates.filter((candidate) => {
-    if (seen.has(candidate.slug)) return false;
-    seen.add(candidate.slug);
-    return true;
-  });
-}
-
 interface MatchFeatureSet {
   brandOverlap: number;
   productTokenOverlap: number;
@@ -316,11 +307,7 @@ export function resolveScan(input: ScanInput): ScanResolution {
     };
   }
 
-  const ranked = dedupeCandidates(
-    listProducts()
-      .map((product) => evaluateCandidate(product, input, method))
-      .sort((a, b) => b.confidence - a.confidence)
-  );
+  const ranked = listProducts().map((product) => evaluateCandidate(product, input, method)).sort((a, b) => b.confidence - a.confidence);
   const top = ranked[0];
   const second = ranked[1];
 
