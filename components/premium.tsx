@@ -119,21 +119,21 @@ export function PreferenceToggle({
   disabled?: boolean;
 }) {
   return (
-    <div className="card-metric flex items-center justify-between gap-3">
+    <button
+      className="card-metric w-full flex items-center justify-between gap-3 text-left hover:bg-white/80 disabled:opacity-60 disabled:cursor-not-allowed"
+      type="button"
+      aria-pressed={enabled}
+      onClick={onToggle}
+      disabled={disabled}
+    >
       <div>
-        <p className="text-sm font-medium">{title}</p>
-        <p className="mt-0.5 text-xs text-ink/65">{description}</p>
+        <p className="text-sm font-semibold text-ink">{title}</p>
+        <p className="mt-0.5 text-xs text-ink-light">{description}</p>
       </div>
-      <button
-        className={`relative h-7 w-12 rounded-full transition ${enabled ? "bg-sage" : "bg-ink/15"}`}
-        type="button"
-        aria-pressed={enabled}
-        onClick={onToggle}
-        disabled={disabled}
-      >
-        <span className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow-sm transition-all duration-200 ${enabled ? "left-6" : "left-1"}`} />
-      </button>
-    </div>
+      <div className={`relative h-7 w-12 rounded-full transition-all duration-300 flex-shrink-0 ${enabled ? "bg-accent" : "bg-black/10"}`}>
+        <span className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow-soft transition-all duration-300 ${enabled ? "left-6" : "left-1"}`} />
+      </div>
+    </button>
   );
 }
 

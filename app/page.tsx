@@ -18,59 +18,69 @@ export default function LandingPage() {
 
   return (
     <main className="shell section-gap">
-      <section className="relative overflow-hidden rounded-[2rem] border border-ink/10 bg-gradient-to-b from-[#fffaf2] via-[#fff6eb] to-[#f6f0e6] px-5 pb-6 pt-6 shadow-[0_16px_50px_-28px_rgba(41,31,22,0.45)]">
-        <div className="pointer-events-none absolute -right-8 -top-8 h-36 w-36 rounded-full bg-[#e46f4e]/20 blur-2xl" />
-        <div className="pointer-events-none absolute -bottom-10 left-0 h-28 w-28 rounded-full bg-[#9caf88]/20 blur-2xl" />
+      {/* Hero Section */}
+      <section className="relative overflow-hidden rounded-[32px] border border-black/5 bg-gradient-to-br from-white/80 via-stone/30 to-accent/10 backdrop-blur-xs px-6 pb-8 pt-8 shadow-soft">
+        {/* Decorative gradient blobs */}
+        <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-accent/15 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-12 left-0 h-32 w-32 rounded-full bg-accent-warm/10 blur-3xl" />
 
-        <p className="pill-accent inline-flex">Trusted grocery guidance for caregivers</p>
+        <div className="relative z-10">
+          <p className="pill-accent inline-flex mb-4">Trusted grocery guidance for caregivers</p>
 
-        <div className="mt-4 space-y-3">
-          <h1 className="display text-[2rem] leading-[1.08] tracking-tight text-ink">
-            Find the best snack choice in seconds.
-          </h1>
-          <p className="max-w-[34ch] text-sm leading-relaxed text-ink/75">
-            Scan once to get a clear health grade, calm ingredient guidance, and healthier alternatives in the same snack family.
-          </p>
+          <div className="mt-6 space-y-4">
+            <h1 className="display text-[2.5rem] leading-[1.1] tracking-tight text-ink font-bold">
+              Find the best snack choice in seconds.
+            </h1>
+            <p className="max-w-[42ch] text-base leading-relaxed text-ink-light">
+              Scan once to get a clear health grade, calm ingredient guidance, and healthier alternatives in the same snack family.
+            </p>
+          </div>
+
+          <div className="mt-8 flex flex-col gap-3">
+            <Link href="/scan" className="btn-primary w-full justify-center text-base font-semibold">
+              Scan a snack
+            </Link>
+            <Link href="#how-it-works" className="btn-secondary w-full justify-center font-semibold">
+              How it works
+            </Link>
+          </div>
+
+          {/* Trust Points */}
+          <ul className="mt-8 grid gap-3 rounded-[24px] border border-black/5 bg-white/50 backdrop-blur-xs p-4 text-sm">
+            {TRUST_POINTS.map((point, index) => (
+              <li key={point} className="flex items-center gap-3">
+                <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent/20 text-xs font-bold text-accent">
+                  {index + 1}
+                </span>
+                <span className="text-ink font-medium">{point}</span>
+              </li>
+            ))}
+          </ul>
         </div>
-
-        <div className="mt-5 flex flex-col gap-3">
-          <Link href="/scan" className="btn-primary w-full justify-center text-base">
-            Scan a snack
-          </Link>
-          <Link href="#how-it-works" className="btn-secondary w-full justify-center">
-            How it works
-          </Link>
-        </div>
-
-        <ul className="mt-5 grid gap-2 rounded-2xl border border-ink/10 bg-ivory/70 p-3 text-sm text-ink/75">
-          {TRUST_POINTS.map((point, index) => (
-            <li key={point} className="flex items-center gap-2">
-              <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-ink/8 text-xs font-semibold text-ink/70">
-                {index + 1}
-              </span>
-              <span>{point}</span>
-            </li>
-          ))}
-        </ul>
       </section>
 
+      {/* Onboarding Flow */}
       {hydrated && !onboarding.onboardingCompleted ? <OnboardingFlow /> : null}
 
-      <section id="how-it-works" className="space-y-2 rounded-3xl border border-ink/10 bg-card px-5 py-5 shadow-sm">
-        <h2 className="display text-2xl">How it works</h2>
-        <p className="text-sm leading-relaxed text-ink/75">
+      {/* How It Works Section */}
+      <section id="how-it-works" className="card-narrative space-y-3">
+        <h2 className="display text-2xl font-bold text-ink">How it works</h2>
+        <p className="text-base leading-relaxed text-ink-light">
           Use your camera to identify a snack, then get an easy-to-read verdict with the key reasons and practical swap ideas.
         </p>
       </section>
 
-      <section id="browse-examples" className="space-y-3 pb-2">
-        <div className="space-y-1">
-          <h2 className="display text-2xl">Editor&apos;s examples</h2>
-          <p className="text-sm text-ink/70">Browse a few common snacks and preview the style of result you&apos;ll get after scanning.</p>
+      {/* Editor's Examples Section */}
+      <section id="browse-examples" className="space-y-4 pb-2">
+        <div className="space-y-2">
+          <h2 className="display text-2xl font-bold text-ink">Editor&apos;s examples</h2>
+          <p className="text-base text-ink-light">Browse a few common snacks and preview the style of result you&apos;ll get after scanning.</p>
         </div>
-        {highlights.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
+        <div className="space-y-3">
+          {highlights.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
       </section>
     </main>
   );
