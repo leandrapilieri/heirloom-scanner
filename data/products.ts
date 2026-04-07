@@ -1,947 +1,429 @@
-export const products = [
+export interface CatalogProduct {
+  id: string;
+  slug: string;
+  name: string;
+  brand: string;
+  category: string;
+  subcategory: string;
+  image: string;
+  calories: number;
+  addedSugarG: number;
+  totalSugarG: number;
+  fiberG: number;
+  proteinG: number;
+  sodiumMg: number;
+  ingredients: string[];
+  allergens: string[];
+  additives: string[];
+  retailerAvailability: Array<{
+    retailer: string;
+    price: string;
+    inStock: boolean;
+    link: string;
+  }>;
+  shortSummary: string;
+  alternativeIds: string[];
+  sourceConfidence: number;
+  processingLevel: "minimal" | "moderate" | "high";
+  score?: number;
+  scoreLabel?: string;
+  analysis?: string;
+  breakdown?: Array<{
+    ingredient: string;
+    status: "None" | "Low" | "Moderate" | "High";
+    statusColor?: string;
+  }>;
+}
+
+export const products: CatalogProduct[] = [
   {
-    "id": "p1",
-    "slug": "little-orchard-cocoa-creme-minis",
-    "name": "Little Orchard Cocoa Creme Minis",
-    "brand": "Little Orchard",
-    "category": "Sandwich Cookies",
-    "subcategory": "cookie",
-    "image": "https://images.unsplash.com/photo-1490474418585-ba9bad8fd0ea?auto=format&fit=crop&w=1000&q=80",
-    "calories": 90,
-    "addedSugarG": 8,
-    "totalSugarG": 11,
-    "fiberG": 2,
-    "proteinG": 3,
-    "sodiumMg": 190,
-    "ingredients": [
+    id: "p1",
+    slug: "jacob-vanilla-chip-protein-bar",
+    name: "Vanilla Chip Protein Bar",
+    brand: "Jacob",
+    category: "Protein Bars",
+    subcategory: "bar",
+    image: "https://images.unsplash.com/photo-1590080876-b9e1f0d0f0c0?auto=format&fit=crop&w=500&q=80",
+    calories: 200,
+    addedSugarG: 1,
+    totalSugarG: 2,
+    fiberG: 10,
+    proteinG: 20,
+    sodiumMg: 150,
+    ingredients: [
+      "Grass-fed Whey Protein",
+      "Organic Almond Butter",
+      "Organic Honey",
+      "Vanilla Extract"
+    ],
+    allergens: ["Milk", "Almonds"],
+    additives: [],
+    retailerAvailability: [
+      { retailer: "Target", price: "$2.49", inStock: true, link: "https://www.target.com" },
+      { retailer: "Whole Foods", price: "$2.99", inStock: true, link: "https://www.wholefoodsmarket.com" },
+      { retailer: "Amazon", price: "$2.29", inStock: true, link: "https://www.amazon.com" }
+    ],
+    shortSummary: "Clean protein bar with whole-food ingredients.",
+    alternativeIds: ["p2", "p3"],
+    sourceConfidence: 0.95,
+    processingLevel: "minimal",
+    score: 100,
+    scoreLabel: "Excellent",
+    analysis: "The Vanilla Chip Protein Bar stands out for its clean ingredient list. It uses whole-food sources like grass-fed protein blend, organic almond butter, and organic honey, with no seed oils or processed sugars. The minimal processing, lack of additives, and organic ingredients make this a strong choice for anyone wanting to avoid highly processed snacks.",
+    breakdown: [
+      { ingredient: "Seed Oils", status: "None", statusColor: "green" },
+      { ingredient: "Processing Profile", status: "Low", statusColor: "green" },
+      { ingredient: "Added Sugars", status: "None", statusColor: "green" }
+    ]
+  },
+  {
+    id: "p2",
+    slug: "perfect-bar-peanut-butter-protein",
+    name: "Peanut Butter Protein Bar",
+    brand: "Perfect Bar",
+    category: "Protein Bars",
+    subcategory: "bar",
+    image: "https://images.unsplash.com/photo-1590080876-b9e1f0d0f0c0?auto=format&fit=crop&w=500&q=80",
+    calories: 210,
+    addedSugarG: 2,
+    totalSugarG: 3,
+    fiberG: 9,
+    proteinG: 18,
+    sodiumMg: 160,
+    ingredients: [
+      "Peanut Butter",
+      "Whey Protein",
+      "Honey",
+      "Almonds"
+    ],
+    allergens: ["Peanuts", "Milk"],
+    additives: [],
+    retailerAvailability: [
+      { retailer: "Target", price: "$2.49", inStock: true, link: "https://www.target.com" },
+      { retailer: "Whole Foods", price: "$2.99", inStock: true, link: "https://www.wholefoodsmarket.com" },
+      { retailer: "Amazon", price: "$2.19", inStock: true, link: "https://www.amazon.com" }
+    ],
+    shortSummary: "Protein-rich bar with natural peanut butter.",
+    alternativeIds: ["p1", "p3"],
+    sourceConfidence: 0.93,
+    processingLevel: "moderate",
+    score: 89,
+    scoreLabel: "Excellent",
+    breakdown: [
+      { ingredient: "Seed Oils", status: "None", statusColor: "green" },
+      { ingredient: "Processing Profile", status: "Low", statusColor: "green" },
+      { ingredient: "Added Sugars", status: "Low", statusColor: "green" }
+    ]
+  },
+  {
+    id: "p3",
+    slug: "larabar-peanut-butter-chocolate",
+    name: "Larabar Peanut Butter Chocolate",
+    brand: "Larabar",
+    category: "Protein Bars",
+    subcategory: "bar",
+    image: "https://images.unsplash.com/photo-1590080876-b9e1f0d0f0c0?auto=format&fit=crop&w=500&q=80",
+    calories: 190,
+    addedSugarG: 0,
+    totalSugarG: 11,
+    fiberG: 3,
+    proteinG: 7,
+    sodiumMg: 50,
+    ingredients: [
+      "Peanuts",
+      "Dates",
+      "Cocoa"
+    ],
+    allergens: ["Peanuts"],
+    additives: [],
+    retailerAvailability: [
+      { retailer: "Target", price: "$1.99", inStock: true, link: "https://www.target.com" },
+      { retailer: "Whole Foods", price: "$2.49", inStock: true, link: "https://www.wholefoodsmarket.com" },
+      { retailer: "Amazon", price: "$1.79", inStock: true, link: "https://www.amazon.com" }
+    ],
+    shortSummary: "Simple, minimal ingredient protein bar.",
+    alternativeIds: ["p1", "p2"],
+    sourceConfidence: 0.91,
+    processingLevel: "minimal",
+    score: 86,
+    scoreLabel: "Excellent",
+    breakdown: [
+      { ingredient: "Seed Oils", status: "None", statusColor: "green" },
+      { ingredient: "Processing Profile", status: "Low", statusColor: "green" },
+      { ingredient: "Added Sugars", status: "None", statusColor: "green" }
+    ]
+  },
+  {
+    id: "p4",
+    slug: "mezcla-organic-chocolate-almond-crunch",
+    name: "Organic Chocolate Almond Crunch",
+    brand: "Mezcla",
+    category: "Protein Bars",
+    subcategory: "bar",
+    image: "https://images.unsplash.com/photo-1590080876-b9e1f0d0f0c0?auto=format&fit=crop&w=500&q=80",
+    calories: 200,
+    addedSugarG: 0,
+    totalSugarG: 10,
+    fiberG: 4,
+    proteinG: 8,
+    sodiumMg: 40,
+    ingredients: [
+      "Organic Almonds",
+      "Organic Cocoa",
+      "Organic Honey",
+      "Organic Coconut Oil"
+    ],
+    allergens: ["Tree nuts"],
+    additives: [],
+    retailerAvailability: [
+      { retailer: "Target", price: "$2.99", inStock: true, link: "https://www.target.com" },
+      { retailer: "Whole Foods", price: "$3.49", inStock: true, link: "https://www.wholefoodsmarket.com" },
+      { retailer: "Amazon", price: "$2.79", inStock: true, link: "https://www.amazon.com" }
+    ],
+    shortSummary: "Organic snack bar with clean ingredients.",
+    alternativeIds: ["p1", "p2"],
+    sourceConfidence: 0.94,
+    processingLevel: "minimal",
+    score: 100,
+    scoreLabel: "Excellent",
+    breakdown: [
+      { ingredient: "Seed Oils", status: "None", statusColor: "green" },
+      { ingredient: "Processing Profile", status: "Low", statusColor: "green" },
+      { ingredient: "Added Sugars", status: "None", statusColor: "green" }
+    ]
+  },
+  {
+    id: "p5",
+    slug: "larabar-lemon-fruit-bar",
+    name: "Larabar Lemon Fruit Bar",
+    brand: "Larabar",
+    category: "Fruit Bars",
+    subcategory: "bar",
+    image: "https://images.unsplash.com/photo-1590080876-b9e1f0d0f0c0?auto=format&fit=crop&w=500&q=80",
+    calories: 180,
+    addedSugarG: 0,
+    totalSugarG: 12,
+    fiberG: 2,
+    proteinG: 4,
+    sodiumMg: 10,
+    ingredients: [
+      "Dates",
+      "Almonds",
+      "Lemon Juice"
+    ],
+    allergens: ["Tree nuts"],
+    additives: [],
+    retailerAvailability: [
+      { retailer: "Target", price: "$1.99", inStock: true, link: "https://www.target.com" },
+      { retailer: "Whole Foods", price: "$2.49", inStock: true, link: "https://www.wholefoodsmarket.com" },
+      { retailer: "Amazon", price: "$1.79", inStock: true, link: "https://www.amazon.com" }
+    ],
+    shortSummary: "Simple fruit and nut bar with no added sugar.",
+    alternativeIds: ["p4", "p6"],
+    sourceConfidence: 0.92,
+    processingLevel: "minimal",
+    score: 93,
+    scoreLabel: "Excellent",
+    breakdown: [
+      { ingredient: "Seed Oils", status: "None", statusColor: "green" },
+      { ingredient: "Processing Profile", status: "Low", statusColor: "green" },
+      { ingredient: "Added Sugars", status: "None", statusColor: "green" }
+    ]
+  },
+  {
+    id: "p6",
+    slug: "little-orchard-cocoa-creme-minis",
+    name: "Little Orchard Cocoa Creme Minis",
+    brand: "Little Orchard",
+    category: "Kids' Snacks",
+    subcategory: "cookie",
+    image: "https://images.unsplash.com/photo-1490474418585-ba9bad8fd0ea?auto=format&fit=crop&w=500&q=80",
+    calories: 90,
+    addedSugarG: 8,
+    totalSugarG: 11,
+    fiberG: 2,
+    proteinG: 3,
+    sodiumMg: 190,
+    ingredients: [
       "Wheat Flour",
       "Sugar",
       "Palm Oil",
       "Cocoa",
       "Soy Lecithin"
     ],
-    "allergens": [
-      "Wheat",
-      "Soy"
+    allergens: ["Wheat", "Soy"],
+    additives: ["Natural Flavor", "Red 40"],
+    retailerAvailability: [
+      { retailer: "Target", price: "$3.99", inStock: true, link: "https://www.target.com" },
+      { retailer: "Whole Foods", price: "$4.49", inStock: false, link: "https://www.wholefoodsmarket.com" },
+      { retailer: "Amazon", price: "$2.89", inStock: true, link: "https://www.amazon.com" }
     ],
-    "additives": [
-      "Natural Flavor",
-      "Red 40"
-    ],
-    "retailerAvailability": [
-      {
-        "retailer": "Target",
-        "price": "$3.99",
-        "inStock": true,
-        "link": "https://www.target.com"
-      },
-      {
-        "retailer": "Whole Foods",
-        "price": "$4.49",
-        "inStock": false,
-        "link": "https://www.wholefoodsmarket.com"
-      },
-      {
-        "retailer": "Amazon",
-        "price": "$2.89",
-        "inStock": true,
-        "link": "https://www.amazon.com"
-      }
-    ],
-    "shortSummary": "A curated snack option for family grocery runs with balanced tradeoffs.",
-    "alternativeIds": [
-      "p4",
-      "p8",
-      "p12"
-    ],
-    "sourceConfidence": 0.89,
-    "processingLevel": "high"
+    shortSummary: "A curated snack option for family grocery runs with balanced tradeoffs.",
+    alternativeIds: ["p7", "p8"],
+    sourceConfidence: 0.89,
+    processingLevel: "high",
+    score: 62,
+    scoreLabel: "Fair",
+    breakdown: [
+      { ingredient: "Seed Oils", status: "High", statusColor: "orange" },
+      { ingredient: "Processing Profile", status: "High", statusColor: "orange" },
+      { ingredient: "Added Sugars", status: "Moderate", statusColor: "yellow" }
+    ]
   },
   {
-    "id": "p2",
-    "slug": "north-harbor-seeded-cheddar-crisp",
-    "name": "North Harbor Seeded Cheddar Crisp",
-    "brand": "North Harbor",
-    "category": "Crackers",
-    "subcategory": "cracker",
-    "image": "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1000&q=80",
-    "calories": 90,
-    "addedSugarG": 1,
-    "totalSugarG": 1,
-    "fiberG": 4,
-    "proteinG": 4,
-    "sodiumMg": 230,
-    "ingredients": [
-      "Whole Grain Wheat",
-      "Cheddar Cheese",
-      "Olive Oil",
-      "Flaxseed",
-      "Sea Salt"
+    id: "p7",
+    slug: "sprout-and-co-cocoa-creme-minis",
+    name: "Sprout & Co Cocoa Creme Minis",
+    brand: "Sprout & Co",
+    category: "Kids' Snacks",
+    subcategory: "cookie",
+    image: "https://images.unsplash.com/photo-1490474418585-ba9bad8fd0ea?auto=format&fit=crop&w=500&q=80",
+    calories: 85,
+    addedSugarG: 4,
+    totalSugarG: 8,
+    fiberG: 3,
+    proteinG: 2,
+    sodiumMg: 120,
+    ingredients: [
+      "Organic Wheat Flour",
+      "Organic Cane Sugar",
+      "Organic Cocoa Butter",
+      "Cocoa"
     ],
-    "allergens": [
-      "Milk",
-      "Wheat"
+    allergens: ["Wheat"],
+    additives: [],
+    retailerAvailability: [
+      { retailer: "Target", price: "$4.49", inStock: true, link: "https://www.target.com" },
+      { retailer: "Whole Foods", price: "$4.99", inStock: true, link: "https://www.wholefoodsmarket.com" },
+      { retailer: "Amazon", price: "$3.99", inStock: true, link: "https://www.amazon.com" }
     ],
-    "additives": [],
-    "retailerAvailability": [
-      {
-        "retailer": "Target",
-        "price": "$2.99",
-        "inStock": true,
-        "link": "https://www.target.com"
-      },
-      {
-        "retailer": "Whole Foods",
-        "price": "$3.99",
-        "inStock": true,
-        "link": "https://www.wholefoodsmarket.com"
-      },
-      {
-        "retailer": "Amazon",
-        "price": "$4.69",
-        "inStock": true,
-        "link": "https://www.amazon.com"
-      }
-    ],
-    "shortSummary": "A curated snack option for family grocery runs with balanced tradeoffs.",
-    "alternativeIds": [
-      "p5",
-      "p9",
-      "p13"
-    ],
-    "sourceConfidence": 0.97,
-    "processingLevel": "moderate"
+    shortSummary: "Organic alternative with cleaner ingredients.",
+    alternativeIds: ["p6", "p8"],
+    sourceConfidence: 0.94,
+    processingLevel: "moderate",
+    score: 82,
+    scoreLabel: "Excellent",
+    breakdown: [
+      { ingredient: "Seed Oils", status: "None", statusColor: "green" },
+      { ingredient: "Processing Profile", status: "Low", statusColor: "green" },
+      { ingredient: "Added Sugars", status: "Low", statusColor: "green" }
+    ]
   },
   {
-    "id": "p3",
-    "slug": "golden-meadow-apple-oat-bar",
-    "name": "Golden Meadow Apple Oat Bar",
-    "brand": "Golden Meadow",
-    "category": "Granola Bars",
-    "subcategory": "bar",
-    "image": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1000&q=80",
-    "calories": 80,
-    "addedSugarG": 4,
-    "totalSugarG": 7,
-    "fiberG": 4,
-    "proteinG": 4,
-    "sodiumMg": 115,
-    "ingredients": [
+    id: "p8",
+    slug: "annie-organic-chewy-granola-bar",
+    name: "Annie's Organic Chewy Granola Bar",
+    brand: "Annie's",
+    category: "Snacks",
+    subcategory: "bar",
+    image: "https://images.unsplash.com/photo-1590080876-b9e1f0d0f0c0?auto=format&fit=crop&w=500&q=80",
+    calories: 120,
+    addedSugarG: 5,
+    totalSugarG: 9,
+    fiberG: 2,
+    proteinG: 2,
+    sodiumMg: 100,
+    ingredients: [
+      "Organic Oats",
+      "Organic Cane Sugar",
+      "Organic Sunflower Oil",
+      "Organic Honey"
+    ],
+    allergens: [],
+    additives: [],
+    retailerAvailability: [
+      { retailer: "Target", price: "$3.99", inStock: true, link: "https://www.target.com" },
+      { retailer: "Whole Foods", price: "$4.49", inStock: true, link: "https://www.wholefoodsmarket.com" },
+      { retailer: "Amazon", price: "$3.49", inStock: true, link: "https://www.amazon.com" }
+    ],
+    shortSummary: "Organic granola bar with simple ingredients.",
+    alternativeIds: ["p5", "p9"],
+    sourceConfidence: 0.91,
+    processingLevel: "moderate",
+    score: 78,
+    scoreLabel: "Good",
+    breakdown: [
+      { ingredient: "Seed Oils", status: "Low", statusColor: "green" },
+      { ingredient: "Processing Profile", status: "Low", statusColor: "green" },
+      { ingredient: "Added Sugars", status: "Moderate", statusColor: "yellow" }
+    ]
+  },
+  {
+    id: "p9",
+    slug: "nature-valley-oats-honey",
+    name: "Nature Valley Oats & Honey",
+    brand: "Nature Valley",
+    category: "Snacks",
+    subcategory: "bar",
+    image: "https://images.unsplash.com/photo-1590080876-b9e1f0d0f0c0?auto=format&fit=crop&w=500&q=80",
+    calories: 180,
+    addedSugarG: 12,
+    totalSugarG: 15,
+    fiberG: 2,
+    proteinG: 4,
+    sodiumMg: 200,
+    ingredients: [
       "Rolled Oats",
-      "Dates",
-      "Apple Puree",
-      "Chia Seeds",
-      "Sea Salt"
-    ],
-    "allergens": [],
-    "additives": [],
-    "retailerAvailability": [
-      {
-        "retailer": "Target",
-        "price": "$4.29",
-        "inStock": true,
-        "link": "https://www.target.com"
-      },
-      {
-        "retailer": "Whole Foods",
-        "price": "$3.99",
-        "inStock": true,
-        "link": "https://www.wholefoodsmarket.com"
-      },
-      {
-        "retailer": "Amazon",
-        "price": "$4.19",
-        "inStock": true,
-        "link": "https://www.amazon.com"
-      }
-    ],
-    "shortSummary": "A curated snack option for family grocery runs with balanced tradeoffs.",
-    "alternativeIds": [
-      "p6",
-      "p10",
-      "p14"
-    ],
-    "sourceConfidence": 0.94,
-    "processingLevel": "minimal"
-  },
-  {
-    "id": "p4",
-    "slug": "sprout-and-co-berry-stretch-bites",
-    "name": "Sprout & Co Berry Stretch Bites",
-    "brand": "Sprout & Co",
-    "category": "Fruit Snacks",
-    "subcategory": "fruit",
-    "image": "https://images.unsplash.com/photo-1466637574441-749b8f19452f?auto=format&fit=crop&w=1000&q=80",
-    "calories": 100,
-    "addedSugarG": 8,
-    "totalSugarG": 10,
-    "fiberG": 0,
-    "proteinG": 1,
-    "sodiumMg": 5,
-    "ingredients": [
-      "Apple Puree",
-      "Pear Juice",
-      "Strawberry Puree",
-      "Pectin"
-    ],
-    "allergens": [],
-    "additives": [],
-    "retailerAvailability": [
-      {
-        "retailer": "Target",
-        "price": "$3.99",
-        "inStock": true,
-        "link": "https://www.target.com"
-      },
-      {
-        "retailer": "Whole Foods",
-        "price": "$4.49",
-        "inStock": true,
-        "link": "https://www.wholefoodsmarket.com"
-      },
-      {
-        "retailer": "Amazon",
-        "price": "$3.79",
-        "inStock": true,
-        "link": "https://www.amazon.com"
-      }
-    ],
-    "shortSummary": "A curated snack option for family grocery runs with balanced tradeoffs.",
-    "alternativeIds": [
-      "p7",
-      "p11",
-      "p15"
-    ],
-    "sourceConfidence": 0.94,
-    "processingLevel": "moderate"
-  },
-  {
-    "id": "p5",
-    "slug": "kindfield-vanilla-yogurt-buttons",
-    "name": "Kindfield Vanilla Yogurt Buttons",
-    "brand": "Kindfield",
-    "category": "Yogurt Snacks",
-    "subcategory": "yogurt",
-    "image": "https://images.unsplash.com/photo-1502741338009-cac2772e18bc?auto=format&fit=crop&w=1000&q=80",
-    "calories": 130,
-    "addedSugarG": 7,
-    "totalSugarG": 9,
-    "fiberG": 1,
-    "proteinG": 3,
-    "sodiumMg": 60,
-    "ingredients": [
-      "Cultured Milk",
-      "Cane Sugar",
-      "Vanilla"
-    ],
-    "allergens": [
-      "Milk"
-    ],
-    "additives": [],
-    "retailerAvailability": [
-      {
-        "retailer": "Target",
-        "price": "$3.49",
-        "inStock": true,
-        "link": "https://www.target.com"
-      },
-      {
-        "retailer": "Whole Foods",
-        "price": "$4.49",
-        "inStock": false,
-        "link": "https://www.wholefoodsmarket.com"
-      },
-      {
-        "retailer": "Amazon",
-        "price": "$4.69",
-        "inStock": true,
-        "link": "https://www.amazon.com"
-      }
-    ],
-    "shortSummary": "A curated snack option for family grocery runs with balanced tradeoffs.",
-    "alternativeIds": [
-      "p8",
-      "p12",
-      "p16"
-    ],
-    "sourceConfidence": 0.89,
-    "processingLevel": "moderate"
-  },
-  {
-    "id": "p6",
-    "slug": "hearthlane-mango-spinach-pouch",
-    "name": "Hearthlane Mango Spinach Pouch",
-    "brand": "Hearthlane",
-    "category": "Fruit & Veggie Pouches",
-    "subcategory": "pouch",
-    "image": "https://images.unsplash.com/photo-1478145046317-39f10e56b5e9?auto=format&fit=crop&w=1000&q=80",
-    "calories": 130,
-    "addedSugarG": 0,
-    "totalSugarG": 8,
-    "fiberG": 3,
-    "proteinG": 0,
-    "sodiumMg": 5,
-    "ingredients": [
-      "Mango",
-      "Banana",
-      "Spinach",
-      "Lemon Juice"
-    ],
-    "allergens": [],
-    "additives": [],
-    "retailerAvailability": [
-      {
-        "retailer": "Target",
-        "price": "$3.99",
-        "inStock": true,
-        "link": "https://www.target.com"
-      },
-      {
-        "retailer": "Whole Foods",
-        "price": "$3.49",
-        "inStock": true,
-        "link": "https://www.wholefoodsmarket.com"
-      },
-      {
-        "retailer": "Amazon",
-        "price": "$2.89",
-        "inStock": true,
-        "link": "https://www.amazon.com"
-      }
-    ],
-    "shortSummary": "A curated snack option for family grocery runs with balanced tradeoffs.",
-    "alternativeIds": [
-      "p9",
-      "p13",
-      "p17"
-    ],
-    "sourceConfidence": 0.94,
-    "processingLevel": "minimal"
-  },
-  {
-    "id": "p7",
-    "slug": "little-orchard-cinnamon-morning-oats",
-    "name": "Little Orchard Cinnamon Morning Oats",
-    "brand": "Little Orchard",
-    "category": "Cereals",
-    "subcategory": "cereal",
-    "image": "https://images.unsplash.com/photo-1490474418585-ba9bad8fd0ea?auto=format&fit=crop&w=1000&q=80",
-    "calories": 100,
-    "addedSugarG": 7,
-    "totalSugarG": 9,
-    "fiberG": 6,
-    "proteinG": 5,
-    "sodiumMg": 170,
-    "ingredients": [
-      "Whole Grain Oats",
-      "Cinnamon",
-      "Maple Sugar",
-      "Sea Salt"
-    ],
-    "allergens": [],
-    "additives": [],
-    "retailerAvailability": [
-      {
-        "retailer": "Target",
-        "price": "$2.99",
-        "inStock": true,
-        "link": "https://www.target.com"
-      },
-      {
-        "retailer": "Whole Foods",
-        "price": "$3.99",
-        "inStock": true,
-        "link": "https://www.wholefoodsmarket.com"
-      },
-      {
-        "retailer": "Amazon",
-        "price": "$4.19",
-        "inStock": true,
-        "link": "https://www.amazon.com"
-      }
-    ],
-    "shortSummary": "A curated snack option for family grocery runs with balanced tradeoffs.",
-    "alternativeIds": [
-      "p10",
-      "p14",
-      "p18"
-    ],
-    "sourceConfidence": 0.9,
-    "processingLevel": "moderate"
-  },
-  {
-    "id": "p8",
-    "slug": "north-harbor-toddler-pea-puffs",
-    "name": "North Harbor Toddler Pea Puffs",
-    "brand": "North Harbor",
-    "category": "Toddler Snacks",
-    "subcategory": "toddler",
-    "image": "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1000&q=80",
-    "calories": 120,
-    "addedSugarG": 0,
-    "totalSugarG": 2,
-    "fiberG": 2,
-    "proteinG": 1,
-    "sodiumMg": 35,
-    "ingredients": [
-      "Pea Flour",
-      "Sunflower Oil",
-      "Sea Salt"
-    ],
-    "allergens": [],
-    "additives": [
-      "Red 40"
-    ],
-    "retailerAvailability": [
-      {
-        "retailer": "Target",
-        "price": "$4.29",
-        "inStock": true,
-        "link": "https://www.target.com"
-      },
-      {
-        "retailer": "Whole Foods",
-        "price": "$4.99",
-        "inStock": true,
-        "link": "https://www.wholefoodsmarket.com"
-      },
-      {
-        "retailer": "Amazon",
-        "price": "$2.89",
-        "inStock": true,
-        "link": "https://www.amazon.com"
-      }
-    ],
-    "shortSummary": "A curated snack option for family grocery runs with balanced tradeoffs.",
-    "alternativeIds": [
-      "p11",
-      "p15",
-      "p19"
-    ],
-    "sourceConfidence": 0.98,
-    "processingLevel": "minimal"
-  },
-  {
-    "id": "p9",
-    "slug": "golden-meadow-chocolate-protein-crisps",
-    "name": "Golden Meadow Chocolate Protein Crisps",
-    "brand": "Golden Meadow",
-    "category": "Protein Snacks",
-    "subcategory": "protein",
-    "image": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1000&q=80",
-    "calories": 120,
-    "addedSugarG": 4,
-    "totalSugarG": 4,
-    "fiberG": 2,
-    "proteinG": 7,
-    "sodiumMg": 110,
-    "ingredients": [
-      "Pea Protein",
-      "Cocoa",
-      "Brown Rice Syrup",
-      "Sea Salt"
-    ],
-    "allergens": [],
-    "additives": [],
-    "retailerAvailability": [
-      {
-        "retailer": "Target",
-        "price": "$2.99",
-        "inStock": true,
-        "link": "https://www.target.com"
-      },
-      {
-        "retailer": "Whole Foods",
-        "price": "$3.99",
-        "inStock": false,
-        "link": "https://www.wholefoodsmarket.com"
-      },
-      {
-        "retailer": "Amazon",
-        "price": "$4.69",
-        "inStock": true,
-        "link": "https://www.amazon.com"
-      }
-    ],
-    "shortSummary": "A curated snack option for family grocery runs with balanced tradeoffs.",
-    "alternativeIds": [
-      "p12",
-      "p16",
-      "p20"
-    ],
-    "sourceConfidence": 0.87,
-    "processingLevel": "moderate"
-  },
-  {
-    "id": "p10",
-    "slug": "sprout-and-co-cocoa-creme-minis",
-    "name": "Sprout & Co Cocoa Creme Minis",
-    "brand": "Sprout & Co",
-    "category": "Sandwich Cookies",
-    "subcategory": "cookie",
-    "image": "https://images.unsplash.com/photo-1466637574441-749b8f19452f?auto=format&fit=crop&w=1000&q=80",
-    "calories": 90,
-    "addedSugarG": 10,
-    "totalSugarG": 10,
-    "fiberG": 2,
-    "proteinG": 3,
-    "sodiumMg": 190,
-    "ingredients": [
-      "Wheat Flour",
       "Sugar",
-      "Palm Oil",
-      "Cocoa",
-      "Soy Lecithin"
+      "Honey",
+      "Soybean Oil"
     ],
-    "allergens": [
-      "Wheat",
-      "Soy"
+    allergens: [],
+    additives: [],
+    retailerAvailability: [
+      { retailer: "Target", price: "$2.99", inStock: true, link: "https://www.target.com" },
+      { retailer: "Whole Foods", price: "$3.49", inStock: true, link: "https://www.wholefoodsmarket.com" },
+      { retailer: "Amazon", price: "$2.49", inStock: true, link: "https://www.amazon.com" }
     ],
-    "additives": [
-      "Natural Flavor"
-    ],
-    "retailerAvailability": [
-      {
-        "retailer": "Target",
-        "price": "$2.99",
-        "inStock": true,
-        "link": "https://www.target.com"
-      },
-      {
-        "retailer": "Whole Foods",
-        "price": "$4.49",
-        "inStock": true,
-        "link": "https://www.wholefoodsmarket.com"
-      },
-      {
-        "retailer": "Amazon",
-        "price": "$4.19",
-        "inStock": true,
-        "link": "https://www.amazon.com"
-      }
-    ],
-    "shortSummary": "A curated snack option for family grocery runs with balanced tradeoffs.",
-    "alternativeIds": [
-      "p13",
-      "p17",
-      "p21"
-    ],
-    "sourceConfidence": 0.93,
-    "processingLevel": "high"
+    shortSummary: "Popular granola bar with moderate sugar content.",
+    alternativeIds: ["p8", "p10"],
+    sourceConfidence: 0.88,
+    processingLevel: "moderate",
+    score: 65,
+    scoreLabel: "Fair",
+    breakdown: [
+      { ingredient: "Seed Oils", status: "Moderate", statusColor: "yellow" },
+      { ingredient: "Processing Profile", status: "Moderate", statusColor: "yellow" },
+      { ingredient: "Added Sugars", status: "High", statusColor: "orange" }
+    ]
   },
   {
-    "id": "p11",
-    "slug": "kindfield-seeded-cheddar-crisp",
-    "name": "Kindfield Seeded Cheddar Crisp",
-    "brand": "Kindfield",
-    "category": "Crackers",
-    "subcategory": "cracker",
-    "image": "https://images.unsplash.com/photo-1502741338009-cac2772e18bc?auto=format&fit=crop&w=1000&q=80",
-    "calories": 120,
-    "addedSugarG": 0,
-    "totalSugarG": 2,
-    "fiberG": 2,
-    "proteinG": 3,
-    "sodiumMg": 230,
-    "ingredients": [
-      "Whole Grain Wheat",
-      "Cheddar Cheese",
-      "Olive Oil",
-      "Flaxseed",
-      "Sea Salt"
+    id: "p10",
+    slug: "clif-bar-chocolate-chip",
+    name: "Clif Bar Chocolate Chip",
+    brand: "Clif Bar",
+    category: "Snacks",
+    subcategory: "bar",
+    image: "https://images.unsplash.com/photo-1590080876-b9e1f0d0f0c0?auto=format&fit=crop&w=500&q=80",
+    calories: 250,
+    addedSugarG: 21,
+    totalSugarG: 23,
+    fiberG: 5,
+    proteinG: 9,
+    sodiumMg: 250,
+    ingredients: [
+      "Organic Oats",
+      "Organic Cane Sugar",
+      "Organic Chocolate Chips",
+      "Organic Sunflower Oil"
     ],
-    "allergens": [
-      "Milk",
-      "Wheat"
+    allergens: [],
+    additives: [],
+    retailerAvailability: [
+      { retailer: "Target", price: "$1.99", inStock: true, link: "https://www.target.com" },
+      { retailer: "Whole Foods", price: "$2.49", inStock: true, link: "https://www.wholefoodsmarket.com" },
+      { retailer: "Amazon", price: "$1.79", inStock: true, link: "https://www.amazon.com" }
     ],
-    "additives": [],
-    "retailerAvailability": [
-      {
-        "retailer": "Target",
-        "price": "$3.99",
-        "inStock": true,
-        "link": "https://www.target.com"
-      },
-      {
-        "retailer": "Whole Foods",
-        "price": "$4.99",
-        "inStock": true,
-        "link": "https://www.wholefoodsmarket.com"
-      },
-      {
-        "retailer": "Amazon",
-        "price": "$4.69",
-        "inStock": true,
-        "link": "https://www.amazon.com"
-      }
-    ],
-    "shortSummary": "A curated snack option for family grocery runs with balanced tradeoffs.",
-    "alternativeIds": [
-      "p14",
-      "p18",
-      "p22"
-    ],
-    "sourceConfidence": 0.87,
-    "processingLevel": "moderate"
-  },
-  {
-    "id": "p12",
-    "slug": "hearthlane-apple-oat-bar",
-    "name": "Hearthlane Apple Oat Bar",
-    "brand": "Hearthlane",
-    "category": "Granola Bars",
-    "subcategory": "bar",
-    "image": "https://images.unsplash.com/photo-1478145046317-39f10e56b5e9?auto=format&fit=crop&w=1000&q=80",
-    "calories": 90,
-    "addedSugarG": 4,
-    "totalSugarG": 7,
-    "fiberG": 3,
-    "proteinG": 2,
-    "sodiumMg": 115,
-    "ingredients": [
-      "Rolled Oats",
-      "Dates",
-      "Apple Puree",
-      "Chia Seeds",
-      "Sea Salt"
-    ],
-    "allergens": [],
-    "additives": [],
-    "retailerAvailability": [
-      {
-        "retailer": "Target",
-        "price": "$3.99",
-        "inStock": true,
-        "link": "https://www.target.com"
-      },
-      {
-        "retailer": "Whole Foods",
-        "price": "$3.99",
-        "inStock": true,
-        "link": "https://www.wholefoodsmarket.com"
-      },
-      {
-        "retailer": "Amazon",
-        "price": "$3.79",
-        "inStock": true,
-        "link": "https://www.amazon.com"
-      }
-    ],
-    "shortSummary": "A curated snack option for family grocery runs with balanced tradeoffs.",
-    "alternativeIds": [
-      "p15",
-      "p19",
-      "p23"
-    ],
-    "sourceConfidence": 0.92,
-    "processingLevel": "minimal"
-  },
-  {
-    "id": "p13",
-    "slug": "little-orchard-berry-stretch-bites",
-    "name": "Little Orchard Berry Stretch Bites",
-    "brand": "Little Orchard",
-    "category": "Fruit Snacks",
-    "subcategory": "fruit",
-    "image": "https://images.unsplash.com/photo-1490474418585-ba9bad8fd0ea?auto=format&fit=crop&w=1000&q=80",
-    "calories": 140,
-    "addedSugarG": 6,
-    "totalSugarG": 9,
-    "fiberG": 2,
-    "proteinG": 0,
-    "sodiumMg": 35,
-    "ingredients": [
-      "Apple Puree",
-      "Pear Juice",
-      "Strawberry Puree",
-      "Pectin"
-    ],
-    "allergens": [],
-    "additives": [],
-    "retailerAvailability": [
-      {
-        "retailer": "Target",
-        "price": "$3.49",
-        "inStock": true,
-        "link": "https://www.target.com"
-      },
-      {
-        "retailer": "Whole Foods",
-        "price": "$3.49",
-        "inStock": false,
-        "link": "https://www.wholefoodsmarket.com"
-      },
-      {
-        "retailer": "Amazon",
-        "price": "$2.89",
-        "inStock": true,
-        "link": "https://www.amazon.com"
-      }
-    ],
-    "shortSummary": "A curated snack option for family grocery runs with balanced tradeoffs.",
-    "alternativeIds": [
-      "p16",
-      "p20",
-      "p24"
-    ],
-    "sourceConfidence": 0.87,
-    "processingLevel": "moderate"
-  },
-  {
-    "id": "p14",
-    "slug": "north-harbor-vanilla-yogurt-buttons",
-    "name": "North Harbor Vanilla Yogurt Buttons",
-    "brand": "North Harbor",
-    "category": "Yogurt Snacks",
-    "subcategory": "yogurt",
-    "image": "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1000&q=80",
-    "calories": 130,
-    "addedSugarG": 7,
-    "totalSugarG": 7,
-    "fiberG": 0,
-    "proteinG": 2,
-    "sodiumMg": 10,
-    "ingredients": [
-      "Cultured Milk",
-      "Cane Sugar",
-      "Vanilla"
-    ],
-    "allergens": [
-      "Milk"
-    ],
-    "additives": [],
-    "retailerAvailability": [
-      {
-        "retailer": "Target",
-        "price": "$4.29",
-        "inStock": true,
-        "link": "https://www.target.com"
-      },
-      {
-        "retailer": "Whole Foods",
-        "price": "$3.49",
-        "inStock": true,
-        "link": "https://www.wholefoodsmarket.com"
-      },
-      {
-        "retailer": "Amazon",
-        "price": "$2.89",
-        "inStock": true,
-        "link": "https://www.amazon.com"
-      }
-    ],
-    "shortSummary": "A curated snack option for family grocery runs with balanced tradeoffs.",
-    "alternativeIds": [
-      "p17",
-      "p21",
-      "p25"
-    ],
-    "sourceConfidence": 0.9,
-    "processingLevel": "moderate"
-  },
-  {
-    "id": "p15",
-    "slug": "golden-meadow-mango-spinach-pouch",
-    "name": "Golden Meadow Mango Spinach Pouch",
-    "brand": "Golden Meadow",
-    "category": "Fruit & Veggie Pouches",
-    "subcategory": "pouch",
-    "image": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1000&q=80",
-    "calories": 90,
-    "addedSugarG": 2,
-    "totalSugarG": 7,
-    "fiberG": 2,
-    "proteinG": 2,
-    "sodiumMg": 5,
-    "ingredients": [
-      "Mango",
-      "Banana",
-      "Spinach",
-      "Lemon Juice"
-    ],
-    "allergens": [],
-    "additives": [
-      "Red 40"
-    ],
-    "retailerAvailability": [
-      {
-        "retailer": "Target",
-        "price": "$2.99",
-        "inStock": true,
-        "link": "https://www.target.com"
-      },
-      {
-        "retailer": "Whole Foods",
-        "price": "$4.49",
-        "inStock": true,
-        "link": "https://www.wholefoodsmarket.com"
-      },
-      {
-        "retailer": "Amazon",
-        "price": "$2.89",
-        "inStock": true,
-        "link": "https://www.amazon.com"
-      }
-    ],
-    "shortSummary": "A curated snack option for family grocery runs with balanced tradeoffs.",
-    "alternativeIds": [
-      "p18",
-      "p22",
-      "p26"
-    ],
-    "sourceConfidence": 0.86,
-    "processingLevel": "minimal"
-  },
-  {
-    "id": "p16",
-    "slug": "sprout-and-co-cinnamon-morning-oats",
-    "name": "Sprout & Co Cinnamon Morning Oats",
-    "brand": "Sprout & Co",
-    "category": "Cereals",
-    "subcategory": "cereal",
-    "image": "https://images.unsplash.com/photo-1466637574441-749b8f19452f?auto=format&fit=crop&w=1000&q=80",
-    "calories": 140,
-    "addedSugarG": 6,
-    "totalSugarG": 8,
-    "fiberG": 5,
-    "proteinG": 4,
-    "sodiumMg": 120,
-    "ingredients": [
-      "Whole Grain Oats",
-      "Cinnamon",
-      "Maple Sugar",
-      "Sea Salt"
-    ],
-    "allergens": [],
-    "additives": [],
-    "retailerAvailability": [
-      {
-        "retailer": "Target",
-        "price": "$3.99",
-        "inStock": true,
-        "link": "https://www.target.com"
-      },
-      {
-        "retailer": "Whole Foods",
-        "price": "$3.99",
-        "inStock": true,
-        "link": "https://www.wholefoodsmarket.com"
-      },
-      {
-        "retailer": "Amazon",
-        "price": "$4.19",
-        "inStock": true,
-        "link": "https://www.amazon.com"
-      }
-    ],
-    "shortSummary": "A curated snack option for family grocery runs with balanced tradeoffs.",
-    "alternativeIds": [
-      "p19",
-      "p23",
-      "p27"
-    ],
-    "sourceConfidence": 0.88,
-    "processingLevel": "moderate"
-  },
-  {
-    "id": "p17",
-    "slug": "kindfield-toddler-pea-puffs",
-    "name": "Kindfield Toddler Pea Puffs",
-    "brand": "Kindfield",
-    "category": "Toddler Snacks",
-    "subcategory": "toddler",
-    "image": "https://images.unsplash.com/photo-1502741338009-cac2772e18bc?auto=format&fit=crop&w=1000&q=80",
-    "calories": 90,
-    "addedSugarG": 0,
-    "totalSugarG": 1,
-    "fiberG": 3,
-    "proteinG": 1,
-    "sodiumMg": 35,
-    "ingredients": [
-      "Pea Flour",
-      "Sunflower Oil",
-      "Sea Salt"
-    ],
-    "allergens": [],
-    "additives": [],
-    "retailerAvailability": [
-      {
-        "retailer": "Target",
-        "price": "$3.99",
-        "inStock": true,
-        "link": "https://www.target.com"
-      },
-      {
-        "retailer": "Whole Foods",
-        "price": "$4.99",
-        "inStock": false,
-        "link": "https://www.wholefoodsmarket.com"
-      },
-      {
-        "retailer": "Amazon",
-        "price": "$4.19",
-        "inStock": true,
-        "link": "https://www.amazon.com"
-      }
-    ],
-    "shortSummary": "A curated snack option for family grocery runs with balanced tradeoffs.",
-    "alternativeIds": [
-      "p20",
-      "p24",
-      "p28"
-    ],
-    "sourceConfidence": 0.92,
-    "processingLevel": "minimal"
-  },
-  {
-    "id": "p18",
-    "slug": "hearthlane-chocolate-protein-crisps",
-    "name": "Hearthlane Chocolate Protein Crisps",
-    "brand": "Hearthlane",
-    "category": "Protein Snacks",
-    "subcategory": "protein",
-    "image": "https://images.unsplash.com/photo-1478145046317-39f10e56b5e9?auto=format&fit=crop&w=1000&q=80",
-    "calories": 100,
-    "addedSugarG": 3,
-    "totalSugarG": 3,
-    "fiberG": 4,
-    "proteinG": 9,
-    "sodiumMg": 160,
-    "ingredients": [
-      "Pea Protein",
-      "Cocoa",
-      "Brown Rice Syrup",
-      "Sea Salt"
-    ],
-    "allergens": [],
-    "additives": [],
-    "retailerAvailability": [
-      {
-        "retailer": "Target",
-        "price": "$4.29",
-        "inStock": true,
-        "link": "https://www.target.com"
-      },
-      {
-        "retailer": "Whole Foods",
-        "price": "$4.49",
-        "inStock": true,
-        "link": "https://www.wholefoodsmarket.com"
-      },
-      {
-        "retailer": "Amazon",
-        "price": "$4.69",
-        "inStock": true,
-        "link": "https://www.amazon.com"
-      }
-    ],
-    "shortSummary": "A curated snack option for family grocery runs with balanced tradeoffs.",
-    "alternativeIds": [
-      "p21",
-      "p25",
-      "p29"
-    ],
-    "sourceConfidence": 0.89,
-    "processingLevel": "moderate"
-  },
+    shortSummary: "Energy bar with organic ingredients.",
+    alternativeIds: ["p8", "p9"],
+    sourceConfidence: 0.87,
+    processingLevel: "moderate",
+    score: 72,
+    scoreLabel: "Good",
+    breakdown: [
+      { ingredient: "Seed Oils", status: "Low", statusColor: "green" },
+      { ingredient: "Processing Profile", status: "Moderate", statusColor: "yellow" },
+      { ingredient: "Added Sugars", status: "High", statusColor: "orange" }
+    ]
+  }
 ] as const;
