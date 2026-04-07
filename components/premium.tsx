@@ -125,13 +125,13 @@ export function PreferenceToggle({
         <p className="mt-0.5 text-xs text-ink/65">{description}</p>
       </div>
       <button
-        className={`relative h-7 w-12 rounded-full transition ${enabled ? "bg-sage/70" : "bg-ink/15"}`}
+        className={`relative h-7 w-12 rounded-full transition ${enabled ? "bg-sage" : "bg-ink/15"}`}
         type="button"
         aria-pressed={enabled}
         onClick={onToggle}
         disabled={disabled}
       >
-        <span className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow transition ${enabled ? "left-6" : "left-1"}`} />
+        <span className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow-sm transition-all duration-200 ${enabled ? "left-6" : "left-1"}`} />
       </button>
     </div>
   );

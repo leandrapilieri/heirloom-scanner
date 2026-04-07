@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useMemo } from "react";
+import { createContext, useCallback, useContext, useMemo } from "react";
 import { PREMIUM_PROMPT_COOLDOWN_MS, PremiumTriggerSource } from "@/lib/premium-access";
 import { defaultPreferences } from "@/lib/preferences";
 import { storageKeys } from "@/lib/storage";
@@ -99,63 +99,68 @@ interface AppStateContextValue {
 const AppStateContext = createContext<AppStateContextValue | null>(null);
 
 export function AppStateProvider({ children }: { children: React.ReactNode }) {
-  const prefState = useLocalState<GuardianPreferences>(storageKeys.preferences, defaultPreferences);
-  const favoriteState = useLocalState<string[]>(storageKeys.favorites, []);
-  const shoppingState = useLocalState<string[]>(storageKeys.shoppingList, []);
-  const recentState = useLocalState<string[]>(storageKeys.recentScans, []);
-  const compareState = useLocalState<CompareSelection>(storageKeys.compareSelection, {
+  const { state: preferences, setState: setPreferences, hydrated: preferencesHydrated } = useLocalState<GuardianPreferences>(storageKeys.preferences, defaultPreferences);
+  const { state: favorites, setState: setFavorites, hydrated: favoritesHydrated } = useLocalState<string[]>(storageKeys.favorites, []);
+  const { state: shoppingList, setState: setShoppingList, hydrated: shoppingHydrated } = useLocalState<string[]>(storageKeys.shoppingList, []);
+  const { state: recentScans, setState: setRecentScans, hydrated: recentHydrated } = useLocalState<string[]>(storageKeys.recentScans, []);
+  const { state: compareSelection, setState: setCompareSelectionState, hydrated: compareHydrated } = useLocalState<CompareSelection>(storageKeys.compareSelection, {
     originalSlug: null,
     alternativeSlug: null
   });
-  const scanOutcomeState = useLocalState<ScanOutcome[]>(storageKeys.scanOutcomes, []);
-  const onboardingState = useLocalState<OnboardingState>(storageKeys.onboarding, onboardingDefaults);
-  const premiumState = useLocalState<PremiumState>(storageKeys.premium, premiumDefaults);
+  const { state: scanOutcomes, setState: setScanOutcomes, hydrated: scanOutcomesHydrated } = useLocalState<ScanOutcome[]>(storageKeys.scanOutcomes, []);
+  const { state: onboarding, setState: setOnboarding, hydrated: onboardingHydrated } = useLocalState<OnboardingState>(storageKeys.onboarding, onboardingDefaults);
+  const { state: premium, setState: setPremium, hydrated: premiumHydrated } = useLocalState<PremiumState>(storageKeys.premium, premiumDefaults);
 
   const hydrated =
-    prefState.hydrated &&
-    favoriteState.hydrated &&
-    shoppingState.hydrated &&
-    recentState.hydrated &&
-    compareState.hydrated &&
-    scanOutcomeState.hydrated &&
-    onboardingState.hydrated &&
-    premiumState.hydrated;
+    preferencesHydrated &&
+    favoritesHydrated &&
+    shoppingHydrated &&
+    recentHydrated &&
+    compareHydrated &&
+    scanOutcomesHydrated &&
+    onboardingHydrated &&
+    premiumHydrated;
 
-  const value = useMemo<AppStateContextValue>(
-    () => ({
+  const addRecentScan = useCallback((slug: string) => {
+    setRecentScans((prev) => [slug, ...prev.filter((item) => item !== slug)].slice(0, 12));
+  }, [setRecentScans]);
+
+  const markSampleResultViewed = useCallback(() => {
+    setOnboarding((prev) => ({ ...prev, sampleResultViewed: true }));
+  }, [setOnboarding]);
+
+  const value = useMemo<AppStateContextValue>(() => ({
       hydrated,
-      preferences: prefState.state,
+      preferences,
       setPreference: (key, enabled) => {
-        prefState.setState((prev) => ({ ...prev, [key]: enabled }));
+        setPreferences((prev) => ({ ...prev, [key]: enabled }));
       },
-      favorites: favoriteState.state,
+      favorites,
       toggleFavorite: (slug) => {
-        favoriteState.setState((prev) => (prev.includes(slug) ? prev.filter((item) => item !== slug) : [slug, ...prev]));
+        setFavorites((prev) => (prev.includes(slug) ? prev.filter((item) => item !== slug) : [slug, ...prev]));
       },
-      shoppingList: shoppingState.state,
+      shoppingList,
       toggleShoppingList: (slug) => {
-        shoppingState.setState((prev) => (prev.includes(slug) ? prev.filter((item) => item !== slug) : [slug, ...prev]));
+        setShoppingList((prev) => (prev.includes(slug) ? prev.filter((item) => item !== slug) : [slug, ...prev]));
       },
-      recentScans: recentState.state,
-      addRecentScan: (slug) => {
-        recentState.setState((prev) => [slug, ...prev.filter((item) => item !== slug)].slice(0, 12));
-      },
-      compareSelection: compareState.state,
-      setCompareSelection: (selection) => compareState.setState(selection),
-      scanOutcomes: scanOutcomeState.state,
+      recentScans,
+      addRecentScan,
+      compareSelection,
+      setCompareSelection: (selection) => setCompareSelectionState(selection),
+      scanOutcomes,
       recordScanOutcome: (outcome) => {
-        scanOutcomeState.setState((prev) => [outcome, ...prev].slice(0, 50));
+        setScanOutcomes((prev) => [outcome, ...prev].slice(0, 50));
       },
       confirmScanOutcome: (id, slug) => {
-        scanOutcomeState.setState((prev) => prev.map((outcome) => (outcome.id === id ? { ...outcome, confirmedCandidateSlug: slug } : outcome)));
+        setScanOutcomes((prev) => prev.map((outcome) => (outcome.id === id ? { ...outcome, confirmedCandidateSlug: slug } : outcome)));
       },
-      onboarding: onboardingState.state,
-      premium: premiumState.state,
+      onboarding,
+      premium,
       setOnboardingConcern: (concern) => {
-        onboardingState.setState((prev) => ({ ...prev, onboardingPrimaryConcern: concern }));
+        setOnboarding((prev) => ({ ...prev, onboardingPrimaryConcern: concern }));
       },
       togglePriorityTag: (tag) => {
-        onboardingState.setState((prev) => {
+        setOnboarding((prev) => {
           const hasTag = prev.priorityTags.includes(tag);
           if (hasTag) return { ...prev, priorityTags: prev.priorityTags.filter((item) => item !== tag) };
           if (prev.priorityTags.length >= 3) return prev;
@@ -163,16 +168,14 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         });
       },
       markResultEducationSeen: () => {
-        onboardingState.setState((prev) => ({ ...prev, resultEducationSeen: true }));
+        setOnboarding((prev) => ({ ...prev, resultEducationSeen: true }));
       },
-      markSampleResultViewed: () => {
-        onboardingState.setState((prev) => ({ ...prev, sampleResultViewed: true }));
-      },
+      markSampleResultViewed,
       markFirstScanCompleted: () => {
-        onboardingState.setState((prev) => ({ ...prev, firstScanCompleted: true }));
+        setOnboarding((prev) => ({ ...prev, firstScanCompleted: true }));
       },
       trackResultContextScan: () => {
-        onboardingState.setState((prev) => {
+        setOnboarding((prev) => {
           const nowMeaningful = prev.resultContextScanSeen;
           return {
             ...prev,
@@ -183,20 +186,20 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         });
       },
       markFirstMeaningfulInteraction: (type) => {
-        onboardingState.setState((prev) => ({
+        setOnboarding((prev) => ({
           ...prev,
           firstMeaningfulInteractionCompleted: true,
           firstMeaningfulInteractionType: prev.firstMeaningfulInteractionType ?? type
         }));
       },
       dismissSetupSummary: () => {
-        onboardingState.setState((prev) => ({ ...prev, setupSummarySeen: true }));
+        setOnboarding((prev) => ({ ...prev, setupSummarySeen: true }));
       },
       maybeTriggerPremiumPrompt: (source) => {
-        if (!onboardingState.state.firstMeaningfulInteractionCompleted) return false;
-        const cooldownUntil = premiumState.state.premiumPromptCooldownUntil;
+        if (!onboarding.firstMeaningfulInteractionCompleted) return false;
+        const cooldownUntil = premium.premiumPromptCooldownUntil;
         if (cooldownUntil && new Date(cooldownUntil).getTime() > Date.now()) return false;
-        premiumState.setState((prev) => ({
+        setPremium((prev) => ({
           ...prev,
           premiumPromptSeen: true,
           premiumTriggerSource: source,
@@ -207,7 +210,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       dismissPremiumPrompt: () => {
         const now = new Date();
         const cooldownUntil = new Date(now.getTime() + PREMIUM_PROMPT_COOLDOWN_MS).toISOString();
-        premiumState.setState((prev) => ({
+        setPremium((prev) => ({
           ...prev,
           premiumPromptDismissedAt: now.toISOString(),
           premiumPromptCooldownUntil: cooldownUntil,
@@ -215,7 +218,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         }));
       },
       openPremiumPreview: (source) => {
-        premiumState.setState((prev) => ({
+        setPremium((prev) => ({
           ...prev,
           premiumPromptSeen: true,
           premiumTriggerSource: source,
@@ -223,10 +226,10 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         }));
       },
       closePremiumPreview: () => {
-        premiumState.setState((prev) => ({ ...prev, premiumPreviewMode: false }));
+        setPremium((prev) => ({ ...prev, premiumPreviewMode: false }));
       },
       completeOnboarding: () => {
-        onboardingState.setState((prev) => ({
+        setOnboarding((prev) => ({
           ...prev,
           onboardingCompleted: true,
           completedAt: new Date().toISOString(),
@@ -235,29 +238,28 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         }));
       },
       resetOnboarding: () => {
-        onboardingState.setState(onboardingDefaults);
+        setOnboarding(onboardingDefaults);
       }
-    }),
-    [
+    }), [
       hydrated,
-      prefState.state,
-      prefState.setState,
-      favoriteState.state,
-      favoriteState.setState,
-      shoppingState.state,
-      shoppingState.setState,
-      recentState.state,
-      recentState.setState,
-      compareState.state,
-      compareState.setState,
-      scanOutcomeState.state,
-      scanOutcomeState.setState,
-      onboardingState.state,
-      onboardingState.setState,
-      premiumState.state,
-      premiumState.setState
-    ]
-  );
+      preferences,
+      favorites,
+      shoppingList,
+      recentScans,
+      compareSelection,
+      scanOutcomes,
+      onboarding,
+      premium,
+      setPreferences,
+      setFavorites,
+      setShoppingList,
+      setCompareSelectionState,
+      setScanOutcomes,
+      setOnboarding,
+      setPremium,
+      addRecentScan,
+      markSampleResultViewed
+    ]);
 
   return <AppStateContext.Provider value={value}>{children}</AppStateContext.Provider>;
 }

@@ -17,7 +17,7 @@ export default function LandingPage() {
   const { onboarding, hydrated } = useAppState();
 
   return (
-    <main className="shell section-gap pb-10">
+    <main className="shell section-gap">
       <section className="relative overflow-hidden rounded-[2rem] border border-ink/10 bg-gradient-to-b from-[#fffaf2] via-[#fff6eb] to-[#f6f0e6] px-5 pb-6 pt-6 shadow-[0_16px_50px_-28px_rgba(41,31,22,0.45)]">
         <div className="pointer-events-none absolute -right-8 -top-8 h-36 w-36 rounded-full bg-[#e46f4e]/20 blur-2xl" />
         <div className="pointer-events-none absolute -bottom-10 left-0 h-28 w-28 rounded-full bg-[#9caf88]/20 blur-2xl" />
