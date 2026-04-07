@@ -42,11 +42,11 @@ export default function ProductPage() {
   const lastTrackedRecentScanSlugRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!product) return;
+    if (!product?.slug) return;
     if (lastTrackedRecentScanSlugRef.current === product.slug) return;
     addRecentScan(product.slug);
     lastTrackedRecentScanSlugRef.current = product.slug;
-  }, [addRecentScan, product]);
+  }, [addRecentScan, product?.slug]);
 
   useEffect(() => {
     if (sampleMode && !onboarding.sampleResultViewed) {
