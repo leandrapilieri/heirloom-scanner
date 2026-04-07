@@ -19,6 +19,7 @@ function ComparePageContent() {
   const searchParams = useSearchParams();
   const {
     preferences,
+    compareSelection,
     premium,
     maybeTriggerPremiumPrompt,
     dismissPremiumPrompt,
@@ -30,10 +31,10 @@ function ComparePageContent() {
 
   const queryOriginalSlug = searchParams.get("original");
   const queryAlternativeSlug = searchParams.get("alternative");
-  // Only use persisted state if fresh intent (URL params) is provided
-  // Otherwise, require explicit selection from a product result page
-  const selectedOriginalSlug = queryOriginalSlug || null;
-  const selectedAlternativeSlug = queryAlternativeSlug || null;
+  const hasCompareQuery = Boolean(queryOriginalSlug && queryAlternativeSlug);
+  const hasCompareSelection = Boolean(compareSelection.originalSlug && compareSelection.alternativeSlug);
+  const selectedOriginalSlug = hasCompareQuery ? queryOriginalSlug : hasCompareSelection ? compareSelection.originalSlug : null;
+  const selectedAlternativeSlug = hasCompareQuery ? queryAlternativeSlug : hasCompareSelection ? compareSelection.alternativeSlug : null;
 
   const original = selectedOriginalSlug ? all.find((product) => product.slug === selectedOriginalSlug) : null;
   const alternative = selectedAlternativeSlug
@@ -81,7 +82,7 @@ function ComparePageContent() {
       <header className="space-y-2">
         <p className="pill-accent inline-flex">Decision sheet</p>
         <h1 className="display text-3xl leading-tight">Compare for this grocery moment</h1>
-        <p className="text-sm leading-relaxed text-ink/70">This page only shows a pair you explicitly started from a product result.</p>
+        <p className="text-sm leading-relaxed text-ink/70">This page only shows a pair you explicitly started from scan or product results.</p>
       </header>
 
       <section className="card-hero space-y-4">
