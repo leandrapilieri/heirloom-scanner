@@ -124,15 +124,23 @@ export function PreferenceToggle({
         <p className="text-sm font-medium">{title}</p>
         <p className="mt-0.5 text-xs text-ink/65">{description}</p>
       </div>
-      <button
-        className={`relative h-7 w-12 rounded-full transition ${enabled ? "bg-sage/70" : "bg-ink/15"}`}
-        type="button"
-        aria-pressed={enabled}
-        onClick={onToggle}
-        disabled={disabled}
-      >
-        <span className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow transition ${enabled ? "left-6" : "left-1"}`} />
-      </button>
+      <div className="flex items-center gap-2">
+        <span className={`text-[11px] font-medium uppercase tracking-[0.08em] ${enabled ? "text-sage" : "text-ink/45"}`}>
+          {enabled ? "On" : "Off"}
+        </span>
+        <button
+          className={`relative h-7 w-12 rounded-full transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/45 ${
+            enabled ? "bg-sage/70" : "bg-ink/15"
+          }`}
+          type="button"
+          aria-pressed={enabled}
+          aria-label={`${title}: ${enabled ? "enabled" : "disabled"}`}
+          onClick={onToggle}
+          disabled={disabled}
+        >
+          <span className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow transition ${enabled ? "left-6" : "left-1"}`} />
+        </button>
+      </div>
     </div>
   );
 }
